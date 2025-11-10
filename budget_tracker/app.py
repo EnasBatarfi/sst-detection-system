@@ -23,13 +23,8 @@ load_dotenv()
 
 from ai_insights import generate_ai_insight, generate_rule_based_insight
 
-# Python runtime-level tracking (auto-enabled via sitecustomize.py or PYTHON_TRACKING_ENABLED)
-# Just connect it to our database when app starts
-try:
-    import python_runtime_tracking
-    python_runtime_tracking.enable_runtime_tracking()
-except ImportError:
-    pass  # Runtime tracking not available
+# Python runtime-level tracking (from installed python-runtime-provenance package)
+# Tracking is automatically enabled if package is installed and PYTHON_TRACKING_ENABLED=1
 
 
 
@@ -42,21 +37,27 @@ db.init_app(app)
 
 with app.app_context():
     db.create_all()
-    # Connect runtime tracking to Flask database (if runtime tracking is enabled)
+    # Connect runtime tracking to Flask database (if python-runtime-provenance is installed)
     try:
-        import python_runtime_tracking
-        # Ensure Flask app is instrumented (in case it was created before tracking enabled)
-        python_runtime_tracking.instrument_flask_app(app)
+        from python_runtime_provenance import get_tracker, instrument_flask_app
+        # Ensure Flask app is instrumented
+        instrument_flask_app(app)
         # Connect tracker to Flask database session
-        tracker = python_runtime_tracking.get_tracker()
-        from models import db as flask_db, DataTag, DataSharingEvent, DataLineage
-        tracker.db_session = flask_db.session
-        tracker.DataTagModel = DataTag
-        tracker.DataSharingEvent = DataSharingEvent
-        tracker.DataLineage = DataLineage
+        tracker = get_tracker()
+        from models import DataTag, DataSharingEvent, DataLineage
+        tracker.connect_database(
+            db_session=db.session,
+            DataTagModel=DataTag,
+            DataSharingEvent=DataSharingEvent,
+            DataLineage=DataLineage
+        )
         print("[Runtime Tracking] Connected to Flask database")
+    except ImportError:
+        # python-runtime-provenance package not installed
+        pass
     except Exception as e:
-        pass  # Runtime tracking will work in-memory only
+        # Runtime tracking will work in-memory only
+        pass
 
 # ---------------- Home ----------------
 @app.route('/')

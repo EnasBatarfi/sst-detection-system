@@ -4,7 +4,7 @@ Python Runtime-Level Instrumentation for Server-Side Tracking (SST) Detection
 This module provides runtime-level instrumentation that works at the Python interpreter
 level, requiring NO changes to application code. It can be activated via:
 1. Environment variable: PYTHON_TRACKING_ENABLED=1
-2. Import hook: import python_runtime_tracking (auto-activates)
+2. Import hook: import python_runtime_provenance (auto-activates)
 3. Site-packages installation (runs on every Python process)
 
 Based on the proposal: "Detecting Server-Side Tracking (SST) via Runtime-Level Instrumentation"
@@ -17,7 +17,6 @@ import json
 import time
 import hashlib
 import threading
-import functools
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Set
 from collections import defaultdict
@@ -67,21 +66,16 @@ class RuntimeProvenanceTracker:
         self.sharing_events: List[Dict] = []
         self.lock = threading.Lock()
         self.db_session = None
-        self._init_database()
+        self.DataTagModel = None
+        self.DataSharingEvent = None
+        self.DataLineage = None
         
-    def _init_database(self):
-        """Initialize database connection if Flask/SQLAlchemy is available."""
-        try:
-            # Try to get Flask app context
-            from flask import has_app_context, current_app
-            if has_app_context():
-                from models import db, DataTag as DataTagModel, DataSharingEvent, DataLineage
-                self.db_session = db.session
-                self.DataTagModel = DataTagModel
-                self.DataSharingEvent = DataSharingEvent
-                self.DataLineage = DataLineage
-        except ImportError:
-            pass  # Flask not available, use in-memory only
+    def connect_database(self, db_session, DataTagModel=None, DataSharingEvent=None, DataLineage=None):
+        """Connect tracker to an external database (e.g., Flask-SQLAlchemy)."""
+        self.db_session = db_session
+        self.DataTagModel = DataTagModel
+        self.DataSharingEvent = DataSharingEvent
+        self.DataLineage = DataLineage
     
     def tag_data(self, value: Any, data_type: str, identifier: str, source: str) -> Optional[DataTag]:
         """Tag personal data with provenance metadata."""
@@ -103,7 +97,7 @@ class RuntimeProvenanceTracker:
     
     def _persist_tag(self, tag: DataTag, value_str: str):
         """Persist tag to database if available."""
-        if self.db_session:
+        if self.db_session and self.DataTagModel:
             try:
                 value_hash = hashlib.sha256(value_str.encode()).hexdigest()
                 db_tag = self.DataTagModel(
@@ -148,7 +142,7 @@ class RuntimeProvenanceTracker:
     
     def _persist_sharing_event(self, event_record: Dict):
         """Persist sharing event to database if available."""
-        if self.db_session:
+        if self.db_session and self.DataSharingEvent:
             try:
                 event_obj = self.DataSharingEvent(
                     event_id=event_record['event_id'],
@@ -174,6 +168,11 @@ def get_tracker() -> RuntimeProvenanceTracker:
             if _tracker_instance is None:
                 _tracker_instance = RuntimeProvenanceTracker()
     return _tracker_instance
+
+
+def is_tracking_enabled() -> bool:
+    """Check if runtime tracking is enabled."""
+    return _tracking_enabled
 
 
 def is_pii_field(field_name: str) -> bool:
@@ -369,21 +368,6 @@ def _instrument_flask_sqlalchemy(module):
             Flask.__init__ = tracked_flask_init
             Flask._tracking_patched = True
         
-        # Also instrument any existing Flask app instances
-        # (in case Flask was imported before tracking was enabled)
-        try:
-            import flask
-            if hasattr(flask, '_app_ctx_stack'):
-                # Try to get current app from context
-                try:
-                    from flask import has_app_context, current_app
-                    if has_app_context():
-                        _add_flask_hooks(current_app)
-                except:
-                    pass
-        except:
-            pass
-        
         module._tracking_instrumented = True
 
 
@@ -438,54 +422,6 @@ def _sanitize_data(data: Dict) -> Dict:
         else:
             sanitized[key] = str(value)[:100]
     return sanitized
-
-
-# Python trace function for function call tracking
-def _trace_function(frame, event, arg):
-    """Python trace function to track function calls and data flow."""
-    if not _tracking_enabled:
-        return
-    
-    if event == 'call':
-        # Tag function arguments if they contain PII
-        tracker = get_tracker()
-        code = frame.f_code
-        func_name = code.co_name
-        
-        # Check local variables for PII
-        for var_name, value in frame.f_locals.items():
-            if is_pii_field(var_name) and isinstance(value, (str, int, float)) and value:
-                # Try to get identifier from context
-                identifier = _extract_identifier_from_frame(frame)
-                if identifier:
-                    tracker.tag_data(value, var_name, identifier, f"function.{func_name}.{var_name}")
-    
-    return _trace_function
-
-
-def _extract_identifier_from_frame(frame) -> Optional[str]:
-    """Extract user identifier from frame context."""
-    # Check for Flask session
-    try:
-        from flask import has_request_context, session
-        if has_request_context():
-            user_id = session.get('user_id')
-            if user_id:
-                return f"user_{user_id}"
-    except:
-        pass
-    
-    # Check frame locals for user_id or email
-    for key in ['user_id', 'id', 'email']:
-        if key in frame.f_locals:
-            value = frame.f_locals[key]
-            if value:
-                if key == 'email':
-                    return f"email_{value}"
-                else:
-                    return f"user_{value}"
-    
-    return None
 
 
 # SQLAlchemy instrumentation
@@ -580,24 +516,8 @@ def enable_runtime_tracking():
     if 'flask' in sys.modules:
         _instrument_flask_sqlalchemy(sys.modules['flask'])
     
-    # Also try to instrument any existing Flask app instances
-    try:
-        import flask
-        if hasattr(flask, 'current_app'):
-            try:
-                from flask import has_app_context, current_app
-                if has_app_context():
-                    _add_flask_hooks(current_app)
-            except:
-                pass
-    except:
-        pass
-    
     # Setup SQLAlchemy tracking
     _setup_sqlalchemy_tracking()
-    
-    # Enable function tracing (optional, can be performance-intensive)
-    # sys.settrace(_trace_function)
     
     print("[Runtime Tracking] Python runtime instrumentation ENABLED")
     print("[Runtime Tracking] Tracking: HTTP requests, API calls, database operations, Flask requests")
@@ -614,14 +534,4 @@ def disable_runtime_tracking():
     global _tracking_enabled
     _tracking_enabled = False
     __builtins__.__import__ = _original_import
-    sys.settrace(None)
     print("[Runtime Tracking] Python runtime instrumentation DISABLED")
-
-
-# Auto-enable if environment variable is set
-if os.getenv('PYTHON_TRACKING_ENABLED', '').lower() in ('1', 'true', 'yes'):
-    enable_runtime_tracking()
-
-# Auto-enable on import (can be disabled by setting env var PYTHON_TRACKING_ENABLED=0)
-elif os.getenv('PYTHON_TRACKING_ENABLED', '').lower() not in ('0', 'false', 'no'):
-    enable_runtime_tracking()
