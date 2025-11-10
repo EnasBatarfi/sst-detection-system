@@ -23,7 +23,13 @@ load_dotenv()
 
 from ai_insights import generate_ai_insight, generate_rule_based_insight
 
-
+# ============================================================================
+# SERVER-SIDE TRACKING (SST) DETECTOR INTEGRATION
+# Runtime-level instrumentation for privacy compliance and transparency
+# ============================================================================
+from sst_detector import init_sst_detector
+from provenance_viewer import provenance_bp
+# ============================================================================
 
 
 app = Flask(__name__)
@@ -34,6 +40,15 @@ db.init_app(app)
 
 with app.app_context():
     db.create_all()
+
+# ============================================================================
+# INITIALIZE SST DETECTOR (Minimal integration - automatic tracking!)
+# ============================================================================
+with app.app_context():
+    detector = init_sst_detector(app, db, console_output=True)
+    # Register provenance viewer blueprint
+    app.register_blueprint(provenance_bp)
+# ============================================================================
 
 # ---------------- Home ----------------
 @app.route('/')
