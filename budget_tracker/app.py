@@ -23,8 +23,23 @@ load_dotenv()
 
 from ai_insights import generate_ai_insight, generate_rule_based_insight
 
-# Runtime tracking imports
-from runtime_tracker import start_tracking
+# Runtime tracking imports - Using new runtime instrumentation
+import sys
+import os
+# Add parent directory to path
+parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if parent_dir not in sys.path:
+    sys.path.insert(0, parent_dir)
+
+# Set up runtime instrumentation BEFORE other imports
+# Import using the actual directory name (with hyphen converted to import path)
+sst_system_path = os.path.join(parent_dir, 'sst-detection-system')
+if sst_system_path not in sys.path:
+    sys.path.insert(0, sst_system_path)
+
+from integration import setup_instrumentation
+
+# Now import other modules (they will be instrumented)
 from database_provenance import db, ProvenanceRecord, AuditLog, store_provenance_record, store_audit_event
 from audit_logger import set_storage_callback
 from data_tagger import auto_tag_request_data, tag_user_model
@@ -51,8 +66,20 @@ with app.app_context():
     except:
         pass
 
-# Initialize runtime tracking
-start_tracking()
+# Initialize NEW runtime instrumentation (replaces monkey patching)
+# This modifies Python runtime to track data flow
+setup_instrumentation(
+    app=app,
+    enable_tracing=True,          # Use sys.settrace for execution tracing
+    enable_import_hook=True,       # Use import hooks for AST transformation
+    instrument_user_code=True,     # Instrument all user code
+    excluded_modules=[             # Exclude these from instrumentation
+        'pytest',
+        'unittest',
+        'flask',
+        'werkzeug',
+    ]
+)
 
 # Set up storage callbacks for audit logging
 set_storage_callback(store_audit_event)
