@@ -23,6 +23,9 @@ load_dotenv()
 
 from ai_insights import generate_ai_insight, generate_rule_based_insight
 
+# Runtime instrumentation for SST detection - minimal integration
+from runtime_tracking import setup_runtime_instrumentation
+
 
 
 
@@ -34,6 +37,8 @@ db.init_app(app)
 
 with app.app_context():
     db.create_all()
+    # Initialize runtime tracking for server-side tracking detection
+    setup_runtime_instrumentation(app, db)
 
 # ---------------- Home ----------------
 @app.route('/')
@@ -307,6 +312,21 @@ def ai_insights_page():
 def logout():
     session.pop('user_id', None)
     return redirect(url_for('index'))
+
+# ---------------- Provenance & SST Detection View ----------------
+@app.route('/provenance')
+def provenance():
+    """View data provenance and server-side tracking logs."""
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    from provenance_utils import get_sharing_events_for_user, get_sst_summary
+    
+    user_id = session['user_id']
+    events = get_sharing_events_for_user(user_id, limit=100)
+    summary = get_sst_summary(user_id=user_id)
+    
+    return render_template('provenance.html', events=events, summary=summary)
 
 
 if __name__ == '__main__':
