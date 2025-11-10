@@ -12,6 +12,11 @@ from .tracking import (
     instrument_flask_app,
     is_tracking_enabled
 )
+from .runtime_instrumentation import (
+    enable_deep_instrumentation,
+    disable_deep_instrumentation,
+    is_deep_instrumentation_enabled
+)
 
 __version__ = '1.0.0'
 __all__ = [
@@ -20,4 +25,7 @@ __all__ = [
     'get_tracker',
     'instrument_flask_app',
     'is_tracking_enabled',
+    'enable_deep_instrumentation',
+    'disable_deep_instrumentation',
+    'is_deep_instrumentation_enabled',
 ]

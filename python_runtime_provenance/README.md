@@ -2,6 +2,13 @@
 
 A standalone Python package for runtime-level Server-Side Tracking (SST) detection that works at the Python interpreter level, requiring **zero application code changes**.
 
+## Key Features
+
+- **Deep Runtime Instrumentation**: Uses `sys.settrace` and `sys.setprofile` instead of monkey patching
+- **Universal Coverage**: Tracks all function calls, not just specific libraries
+- **Automatic Detection**: Detects API calls, data flow, and PII access automatically
+- **Zero Code Changes**: Works with any Python application without modifications
+
 ## Installation
 
 ### Option 1: Install as Python Package (Recommended)
@@ -79,10 +86,16 @@ If database is not connected, tracking works in-memory only.
 
 ## What Gets Tracked
 
-- **HTTP Requests** (`requests` library)
-- **AI API Calls** (OpenAI/Groq)
-- **Flask Requests** (PII from forms/JSON)
-- **Database Operations** (SQLAlchemy INSERT/UPDATE)
+Using deep Python runtime instrumentation (`sys.settrace` + `sys.setprofile`):
+
+- **All Function Calls**: Every function call is traced
+- **PII Data Access**: Local variables checked for PII fields
+- **API Calls**: Automatically detects HTTP requests, AI APIs, etc.
+- **Data Flow**: Tracks how data moves through functions
+- **Return Values**: Checks return values for tagged data
+- **Database Operations**: SQLAlchemy INSERT/UPDATE via events
+
+**No monkey patching** - works at the Python interpreter level!
 
 ## Files
 

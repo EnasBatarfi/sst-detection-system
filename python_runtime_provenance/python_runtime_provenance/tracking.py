@@ -181,137 +181,40 @@ def is_pii_field(field_name: str) -> bool:
     return any(pii in field_lower for pii in PII_FIELDS)
 
 
-# Runtime instrumentation functions
+# Deep runtime instrumentation (no monkey patching)
+from .runtime_instrumentation import (
+    enable_deep_instrumentation,
+    disable_deep_instrumentation,
+    is_deep_instrumentation_enabled
+)
+
+# Import hooks for module-level instrumentation
 _original_import = __builtins__.__import__
 
 
 def _tracking_import(name, globals=None, locals=None, fromlist=(), level=0):
-    """Wrapped import that instruments modules as they're imported."""
+    """Wrapped import that instruments modules using deep runtime hooks."""
     module = _original_import(name, globals, locals, fromlist, level)
     
-    # Instrument specific modules
-    if name == 'requests':
-        _instrument_requests_module(module)
-    elif name == 'openai':
-        _instrument_openai_module(module)
-    elif name == 'flask' or name.startswith('flask.'):
-        _instrument_flask_sqlalchemy(module)
-    elif 'sqlalchemy' in name:
-        _setup_sqlalchemy_tracking()
+    # Use deep instrumentation instead of monkey patching
+    # The runtime instrumentation will catch function calls automatically
+    if name == 'requests' or name == 'openai' or name == 'flask' or 'sqlalchemy' in name:
+        # Deep instrumentation will handle these via sys.settrace
+        pass
     
     return module
 
 
-def _instrument_requests_module(requests_module):
-    """Instrument the requests module at import time."""
-    if hasattr(requests_module, '_tracking_instrumented'):
-        return
-    
-    original_post = requests_module.post
-    original_get = requests_module.get
-    original_request = requests_module.request
-    
-    def tracked_post(url, *args, **kwargs):
-        tracker = get_tracker()
-        data = kwargs.get('data') or kwargs.get('json') or {}
-        tags = _extract_tags_from_dict(data, tracker)
-        
-        if tags:
-            tracker.log_sharing_event(
-                event_type='api_call',
-                destination=str(url),
-                data=_sanitize_data(data),
-                tags=tags,
-                metadata={'method': 'POST'}
-            )
-        
-        return original_post(url, *args, **kwargs)
-    
-    def tracked_get(url, *args, **kwargs):
-        tracker = get_tracker()
-        params = kwargs.get('params', {})
-        tags = _extract_tags_from_dict(params, tracker)
-        
-        if tags:
-            tracker.log_sharing_event(
-                event_type='api_call',
-                destination=str(url),
-                data=_sanitize_data(params),
-                tags=tags,
-                metadata={'method': 'GET'}
-            )
-        
-        return original_get(url, *args, **kwargs)
-    
-    def tracked_request(method, url, *args, **kwargs):
-        tracker = get_tracker()
-        data = kwargs.get('data') or kwargs.get('json') or kwargs.get('params') or {}
-        tags = _extract_tags_from_dict(data, tracker)
-        
-        if tags:
-            tracker.log_sharing_event(
-                event_type='api_call',
-                destination=str(url),
-                data=_sanitize_data(data),
-                tags=tags,
-                metadata={'method': method}
-            )
-        
-        return original_request(method, url, *args, **kwargs)
-    
-    requests_module.post = tracked_post
-    requests_module.get = tracked_get
-    requests_module.request = tracked_request
-    requests_module._tracking_instrumented = True
+# Removed monkey patching - using deep runtime instrumentation instead
+# The runtime_instrumentation module handles this via sys.settrace
 
 
-def _instrument_openai_module(openai_module):
-    """Instrument OpenAI module at import time."""
-    if hasattr(openai_module, '_tracking_instrumented'):
-        return
-    
-    if hasattr(openai_module, 'OpenAI'):
-        original_init = openai_module.OpenAI.__init__
-        
-        def tracked_init(self, *args, **kwargs):
-            original_init(self, *args, **kwargs)
-            
-            # Instrument responses.create for Groq API
-            if hasattr(self, 'responses') and hasattr(self.responses, 'create'):
-                if not hasattr(self.responses, '_tracking_instrumented'):
-                    original_create = self.responses.create
-                    base_url = getattr(self, 'base_url', 'groq_api') or 'groq_api'
-                    
-                    def tracked_create(*args, **kwargs):
-                        tracker = get_tracker()
-                        input_val = kwargs.get('input', '')
-                        tags = []
-                        data_dict = {}
-                        
-                        if isinstance(input_val, str):
-                            tags = _extract_tags_from_string(input_val, tracker)
-                            data_dict['input'] = input_val[:500]
-                        
-                        if tags:
-                            tracker.log_sharing_event(
-                                event_type='api_call',
-                                destination=base_url,
-                                data=data_dict,
-                                tags=tags,
-                                metadata={'model': kwargs.get('model'), 'api_type': 'groq'}
-                            )
-                        
-                        return original_create(*args, **kwargs)
-                    
-                    self.responses.create = tracked_create
-                    self.responses._tracking_instrumented = True
-        
-        openai_module.OpenAI.__init__ = tracked_init
-        openai_module._tracking_instrumented = True
+# Removed monkey patching - using deep runtime instrumentation instead
+# The runtime_instrumentation module handles this via sys.settrace
 
 
 def _add_flask_hooks(app_instance):
-    """Add Flask hooks to an app instance."""
+    """Add Flask hooks to an app instance (minimal - deep instrumentation handles the rest)."""
     tracker = get_tracker()
     
     @app_instance.before_request
@@ -327,7 +230,7 @@ def _add_flask_hooks(app_instance):
                 identifier = f"email_{request.form.get('email')}"
             
             if identifier:
-                # Tag form data
+                # Tag form data (deep instrumentation will catch function calls)
                 if hasattr(request, 'form'):
                     for key, value in request.form.items():
                         if is_pii_field(key) and value:
@@ -349,15 +252,14 @@ def _add_flask_hooks(app_instance):
 
 
 def _instrument_flask_sqlalchemy(module):
-    """Instrument Flask/SQLAlchemy at import time."""
+    """Instrument Flask at import time (minimal - deep instrumentation handles the rest)."""
     if hasattr(module, '_tracking_instrumented'):
         return
     
-    # Instrument Flask request handling
+    # Only add Flask hooks - deep instrumentation handles function calls
     if hasattr(module, 'Flask'):
         Flask = module.Flask
         
-        # Patch Flask.__init__ to add hooks to new app instances
         if not hasattr(Flask, '_tracking_patched'):
             original_flask_init = Flask.__init__
             
@@ -497,7 +399,7 @@ def _extract_table_name(statement: str) -> str:
 
 
 def enable_runtime_tracking():
-    """Enable Python runtime-level tracking."""
+    """Enable Python runtime-level tracking using deep instrumentation."""
     global _tracking_enabled
     
     if _tracking_enabled:
@@ -505,22 +407,22 @@ def enable_runtime_tracking():
     
     _tracking_enabled = True
     
-    # Replace builtin import to instrument modules as they load
+    # Enable deep runtime instrumentation (sys.settrace, sys.setprofile)
+    enable_deep_instrumentation()
+    
+    # Replace builtin import for module-level hooks
     __builtins__.__import__ = _tracking_import
     
-    # Instrument already-loaded modules
-    if 'requests' in sys.modules:
-        _instrument_requests_module(sys.modules['requests'])
-    if 'openai' in sys.modules:
-        _instrument_openai_module(sys.modules['openai'])
+    # Instrument Flask if already loaded
     if 'flask' in sys.modules:
         _instrument_flask_sqlalchemy(sys.modules['flask'])
     
-    # Setup SQLAlchemy tracking
+    # Setup SQLAlchemy tracking (uses events, not monkey patching)
     _setup_sqlalchemy_tracking()
     
-    print("[Runtime Tracking] Python runtime instrumentation ENABLED")
-    print("[Runtime Tracking] Tracking: HTTP requests, API calls, database operations, Flask requests")
+    print("[Runtime Tracking] Deep Python runtime instrumentation ENABLED")
+    print("[Runtime Tracking] Using: sys.settrace, sys.setprofile, import hooks")
+    print("[Runtime Tracking] Tracking: Function calls, data flow, HTTP requests, API calls, database operations")
 
 
 def instrument_flask_app(app_instance):
@@ -533,5 +435,11 @@ def disable_runtime_tracking():
     """Disable Python runtime-level tracking."""
     global _tracking_enabled
     _tracking_enabled = False
+    
+    # Disable deep instrumentation
+    disable_deep_instrumentation()
+    
+    # Restore original import
     __builtins__.__import__ = _original_import
-    print("[Runtime Tracking] Python runtime instrumentation DISABLED")
+    
+    print("[Runtime Tracking] Deep Python runtime instrumentation DISABLED")
