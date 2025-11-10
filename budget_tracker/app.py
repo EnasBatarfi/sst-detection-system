@@ -22,6 +22,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from ai_insights import generate_ai_insight, generate_rule_based_insight
+from runtime_tracking import init_runtime_tracking
 
 
 
@@ -31,6 +32,7 @@ CATEGORIES = ["Food", "Transport", "Entertainment", "Bills", "Shopping", "Other"
 
 app.config.from_object(Config)
 db.init_app(app)
+init_runtime_tracking(app=app, db=db)
 
 with app.app_context():
     db.create_all()
