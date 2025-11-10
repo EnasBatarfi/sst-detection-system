@@ -23,8 +23,13 @@ load_dotenv()
 
 from ai_insights import generate_ai_insight, generate_rule_based_insight
 
-# Runtime instrumentation for SST detection - minimal integration
-from runtime_tracking import setup_runtime_instrumentation
+# Python runtime-level tracking (auto-enabled via sitecustomize.py or PYTHON_TRACKING_ENABLED)
+# Just connect it to our database when app starts
+try:
+    import python_runtime_tracking
+    python_runtime_tracking.enable_runtime_tracking()
+except ImportError:
+    pass  # Runtime tracking not available
 
 
 
@@ -37,8 +42,21 @@ db.init_app(app)
 
 with app.app_context():
     db.create_all()
-    # Initialize runtime tracking for server-side tracking detection
-    setup_runtime_instrumentation(app, db)
+    # Connect runtime tracking to Flask database (if runtime tracking is enabled)
+    try:
+        import python_runtime_tracking
+        # Ensure Flask app is instrumented (in case it was created before tracking enabled)
+        python_runtime_tracking.instrument_flask_app(app)
+        # Connect tracker to Flask database session
+        tracker = python_runtime_tracking.get_tracker()
+        from models import db as flask_db, DataTag, DataSharingEvent, DataLineage
+        tracker.db_session = flask_db.session
+        tracker.DataTagModel = DataTag
+        tracker.DataSharingEvent = DataSharingEvent
+        tracker.DataLineage = DataLineage
+        print("[Runtime Tracking] Connected to Flask database")
+    except Exception as e:
+        pass  # Runtime tracking will work in-memory only
 
 # ---------------- Home ----------------
 @app.route('/')
