@@ -1,0 +1,147 @@
+/* ---------- Global Styles ---------- */
+body {
+    margin: 0;
+    font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: #f8fafc; /* landing page background */
+    color: #333;               /* landing page text color */
+}
+
+/* ---------- Container Layout ---------- */
+.auth-container {
+    display: flex;
+    min-height: 100vh;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    padding: 20px;
+    background: linear-gradient(120deg, #2563eb, #6d93e5); /* landing page primary gradient */
+}
+
+/* ---------- Form/Card Section ---------- */
+.auth-box {
+    background: #ffffff;       /* white card like landing page */
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    width: 380px;
+    text-align: left;
+}
+
+.auth-box h2 {
+    font-size: 26px;
+    color: #111827;            /* landing page heading color */
+    margin-bottom: 10px;
+    text-align: center;
+    font-weight: 600;
+}
+
+.subtitle {
+    text-align: center;
+    color: #4b5563;            /* landing page subtitle color */
+    margin-bottom: 25px;
+}
+
+/* ---------- Input Styling ---------- */
+.input-group {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.input-group label {
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: #334155;            /* landing page label color */
+}
+
+.input-group input,
+.input-group select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    font-size: 14px;
+    outline: none;
+    background-color: #fff;
+    color: #1e293b;             /* landing page input text color */
+    transition: all 0.2s ease;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+}
+
+/* Focus style */
+.input-group input:focus,
+.input-group select:focus {
+    border-color: #4f46e5;     /* landing page focus color */
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+}
+
+/* Dropdown arrow */
+.input-group select {
+    background-image: url("data:image/svg+xml,%3Csvg width='14' height='8' viewBox='0 0 14 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L7 7L13 1' stroke='%234F46E5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 14px 8px;
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+    width: 100%;
+    background-color: #2563eb;  /* landing page primary button color */
+    color: white;
+    border: none;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-top: 10px;
+}
+
+.btn:hover {
+    background-color: #1e40af;  /* landing page hover color */
+}
+
+/* ---------- Switch / Extra Links ---------- */
+.switch {
+    text-align: center;
+    margin-top: 15px;
+    color: #475569;             /* landing page gray */
+}
+
+.switch a {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.switch a:hover {
+    text-decoration: underline;
+}
+
+/* ---------- Image Section ---------- */
+.auth-image img {
+    max-width: 420px;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+    .auth-container {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .auth-image img {
+        display: none;
+    }
+
+    .auth-box {
+        width: 90%;
+        padding: 30px 20px;
+    }
+}

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile | SmartBudget</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <script>
+        function enableEdit() {
+            const fields = document.querySelectorAll('.profile-card input, .profile-card select');
+            fields.forEach(f => {
+                if(f.id !== 'email') f.removeAttribute('readonly');
+                f.removeAttribute('disabled');
+            });
+            document.getElementById('editBtn').style.display = 'none';
+            document.getElementById('saveBtn').style.display = 'block';
+        }
+    </script>
+</head>
+<body>
+<div class="dashboard-container">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="user-info">
+            <h3>{{ user.name }}</h3>
+        </div>
+        <a href="{{ url_for('dashboard') }}" class="btn">Dashboard</a>
+        <a href="{{ url_for('profile') }}" class="btn active">Profile</a>
+        <a href="{{ url_for('all_transactions') }}" class="btn">All Transactions</a>
+        <a href="{{ url_for('ai_insights_page') }}" class="btn">AI Insights</a>
+        <a href="{{ url_for('logout') }}" class="btn logout">Logout</a>
+    </div>
+
+    <!-- Main content -->
+    <div class="main-content">
+        <h2>My Profile</h2>
+        <div class="profile-container">
+        <div class="profile-card">
+            <form method="POST">
+                <!-- Name -->
+                <div class="input-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" name="name" id="name" value="{{ user.name }}" readonly>
+                </div>
+
+                <!-- Email (readonly always) -->
+                <div class="input-group">
+                    <label for="email">Email</label>
+                    <input type="email" name="email" id="email" value="{{ user.email }}" readonly>
+                </div>
+
+                <!-- Gender -->
+                <div class="input-group">
+                    <label for="gender">Gender</label>
+                    <select name="gender" id="gender" disabled>
+                        <option value="Male" {% if user.gender == 'Male' %}selected{% endif %}>Male</option>
+                        <option value="Female" {% if user.gender == 'Female' %}selected{% endif %}>Female</option>
+                        <option value="Other" {% if user.gender == 'Other' %}selected{% endif %}>Other</option>
+                    </select>
+                </div>
+
+                <!-- Birthday -->
+                <div class="input-group">
+                    <label for="birthday">Birthday</label>
+                    <input type="date" name="birthday" id="birthday" value="{{ user.birthday }}" readonly>
+                </div>
+
+                <!-- Monthly Income -->
+                <div class="input-group">
+                    <label for="income">Monthly Income</label>
+                    <input type="number" name="income" id="income" value="{{ user.income }}" step="0.01" readonly>
+                </div>
+
+                <!-- Currency -->
+                <div class="input-group">
+                    <label for="currency">Currency</label>
+                    <select name="currency" id="currency" disabled>
+                        {% for code, name in currencies %}
+                        <option value="{{ code }}" {% if user.currency==code %}selected{% endif %}>{{ code }} - {{ name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Budget Style -->
+                <div class="input-group">
+                    <label for="budget_style">Budget Style</label>
+                    <select name="budget_style" id="budget_style" disabled>
+                        <option value="Conservative" {% if user.budget_style=='Conservative' %}selected{% endif %}>Conservative</option>
+                        <option value="Balanced" {% if user.budget_style=='Balanced' %}selected{% endif %}>Balanced</option>
+                        <option value="Flexible" {% if user.budget_style=='Flexible' %}selected{% endif %}>Flexible</option>
+                    </select>
+                </div>
+
+                <!-- Financial Goals -->
+                <div class="input-group">
+                    <label for="goals">Financial Goals</label>
+                    <input type="text" name="goals" id="goals" value="{{ user.goals }}" readonly>
+                </div>
+
+                <!-- Start of Week -->
+                <div class="input-group">
+                    <label for="week_start">Start of Week</label>
+                    <select name="week_start" id="week_start" disabled>
+                        <option value="Monday" {% if user.week_start=='Monday' %}selected{% endif %}>Monday</option>
+                        <option value="Sunday" {% if user.week_start=='Sunday' %}selected{% endif %}>Sunday</option>
+                    </select>
+                </div>
+
+                <button type="button" id="editBtn" class="btn save-btn" onclick="enableEdit()">Edit Profile</button>
+                <button type="submit" id="saveBtn" class="btn save-btn" style="display:none;">Save Changes</button>
+            </form>
+        </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Insights | SmartBudget</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+<body>
+<div class="dashboard-container">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="user-info">
+            <h3>{{ user.name }}</h3>
+        </div>
+        <a href="{{ url_for('dashboard') }}" class="btn">Dashboard</a>
+        <a href="{{ url_for('profile') }}" class="btn">Profile</a>
+        <a href="{{ url_for('all_transactions') }}" class="btn">All Transactions</a>
+        <a href="{{ url_for('ai_insights_page') }}" class="btn active">AI Insights</a>
+        <a href="{{ url_for('logout') }}" class="btn logout">Logout</a>
+    </div>
+
+    <!-- Main content -->
+    <div class="main-content">
+        <h2>AI Insights</h2>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Title</th>
+                        <th>Problem</th>
+                        <th>Action Steps</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for insight in ai_insight %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ insight.title }}</td>
+                        <td>{{ insight.problem }}</td>
+                        <td>
+                            <ul>
+                                {% for step in insight.action_steps %}
+                                <li>{{ step }}</li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" style="text-align:center;">No insights available</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <a href="{{ url_for('dashboard') }}" class="view-all">Back to Dashboard</a>
+    </div>
+
+</div>
+</body>
+</html>

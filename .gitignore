@@ -1,0 +1,5 @@
+# Environment variables
+git rm --cached budget_tracker/.env
+.env.local
+.env.*.local
+.env*

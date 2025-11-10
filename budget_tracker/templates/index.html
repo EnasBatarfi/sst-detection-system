@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome to SmartBudget</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav>
+        <h1>💰 SmartBudget</h1>
+        <div class="auth-links">
+            <a href="{{ url_for('login') }}">Login</a>
+            <a href="{{ url_for('signup') }}">Sign Up</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-text">
+            <h2>Take Control of Your Finances</h2>
+            <p>Track your expenses, visualize your spending, and reach your savings goals — all in one place.</p>
+            <a href="{{ url_for('signup') }}">Get Started</a>
+        </div>
+        <div class="hero-image">
+            <img src="{{ url_for('static', filename='images/landing.png') }}" alt="Landing Image">
+        </div>
+    </section>
+
+    <footer>
+        &copy; {{ datetime.utcnow().year }} SmartBudget. All rights reserved.
+    </footer>
+</body>
+</html>

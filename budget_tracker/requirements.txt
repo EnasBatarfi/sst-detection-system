@@ -1,0 +1,12 @@
+Flask
+Flask-SQLAlchemy
+Werkzeug
+pandas
+plotly
+scikit-learn
+pycountry
+requests
+python-dotenv
+transformers 
+torch
+
