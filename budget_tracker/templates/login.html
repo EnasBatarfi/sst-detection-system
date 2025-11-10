@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login | SmartBudget</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+</head>
+<body>
+
+<div class="auth-container">
+    <div class="auth-box">
+        <h2>Welcome Back 👋</h2>
+        <p class="subtitle">Log in to continue managing your finances</p>
+
+      <form method="POST" action="{{ url_for('login') }}">
+    <div class="input-group">
+        <label>Email</label>
+        <input type="email" name="email" placeholder="Enter your email" value="{{ email or '' }}" required>
+    </div>
+
+    <div class="input-group">
+        <label>Password</label>
+        <input type="password" name="password" placeholder="Enter your password" required>
+    </div>
+
+    {% if errors.credentials %}
+        <p style="color:red; margin-top:4px;">{{ errors.credentials }}</p>
+    {% endif %}
+
+    <button type="submit" class="btn">Login</button>
+</form>
+
+
+        <p class="switch">Don’t have an account? 
+            <a href="{{ url_for('signup') }}">Sign up</a>
+        </p>
+    </div>
+</div>
+
+</body>
+</html>

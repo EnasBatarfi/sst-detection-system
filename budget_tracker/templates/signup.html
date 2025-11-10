@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sign Up | SmartBudget</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+</head>
+<body>
+
+<div class="auth-container">
+    <div class="auth-box">
+        <h2>Create Your Account 🚀</h2>
+        <p class="subtitle">Start tracking your expenses easily</p>
+
+        <form method="POST" action="{{ url_for('signup') }}">
+            <div class="input-group">
+                <label>Name</label>
+                <input type="text" name="name" placeholder="Your full name" value="{{ form_data.name }}" required>
+                {% if errors.name %}<p style="color:red;">{{ errors.name }}</p>{% endif %}
+            </div>
+
+            <div class="input-group">
+                <label>Email</label>
+                <input type="email" name="email" placeholder="Enter your email" value="{{ form_data.email }}" required>
+                {% if errors.email %}<p style="color:red;">{{ errors.email }}</p>{% endif %}
+            </div>
+
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" name="password" placeholder="Create a password" value="{{ form_data.password }}" required>
+                {% if errors.password %}<p style="color:red;">{{ errors.password }}</p>{% endif %}
+            </div>
+
+            <div class="input-group">
+                <label>Birthday</label>
+                <input type="date" name="birthday" value="{{ form_data.birthday }}" required>
+                {% if errors.birthday %}<p style="color:red;">{{ errors.birthday }}</p>{% endif %}
+            </div>
+
+            <div class="input-group">
+                <label>Gender</label>
+                <select name="gender" required>
+                    <option value="" disabled {% if not form_data.gender %}selected{% endif %}>Select your gender</option>
+                    <option value="Male" {% if form_data.gender == 'Male' %}selected{% endif %}>Male</option>
+                    <option value="Female" {% if form_data.gender == 'Female' %}selected{% endif %}>Female</option>
+                    <option value="Other" {% if form_data.gender == 'Other' %}selected{% endif %}>Other</option>
+                </select>
+                {% if errors.gender %}<p style="color:red;">{{ errors.gender }}</p>{% endif %}
+            </div>
+
+            <div class="input-group">
+                <label>Monthly Income</label>
+                <input type="number" step="0.01" name="income" placeholder="Your monthly income" value="{{ form_data.income }}" required>
+                {% if errors.income %}<p style="color:red;">{{ errors.income }}</p>{% endif %}
+            </div>
+
+            <div class="input-group">
+                <label>Currency</label>
+                <select name="currency" id="currency" required>
+                    {% for code, name in currencies %}
+                        <option value="{{ code }}" {% if form_data.currency == code %}selected{% endif %}>{{ code }} - {{ name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>Budget Style</label>
+                <select name="budget_style">
+                    <option value="Conservative" {% if form_data.budget_style == 'Conservative' %}selected{% endif %}>Conservative</option>
+                    <option value="Balanced" {% if form_data.budget_style == 'Balanced' %}selected{% endif %}>Balanced</option>
+                    <option value="Flexible" {% if form_data.budget_style == 'Flexible' %}selected{% endif %}>Flexible</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>Financial Goals</label>
+                <input type="text" name="goals" placeholder="Emergency fund, vacation, etc." value="{{ form_data.goals }}">
+            </div>
+
+            <div class="input-group">
+                <label>Start of Week</label>
+                <select name="week_start">
+                    <option value="Monday" {% if form_data.week_start == 'Monday' %}selected{% endif %}>Monday</option>
+                    <option value="Sunday" {% if form_data.week_start == 'Sunday' %}selected{% endif %}>Sunday</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn">Sign Up</button>
+        </form>
+
+        <p class="switch">Already have an account?
+            <a href="{{ url_for('login') }}">Login</a>
+        </p>
+    </div>
+</div>
+
+</body>
+</html>

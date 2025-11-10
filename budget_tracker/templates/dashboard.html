@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard | SmartBudget</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="dashboard-container">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="user-info">
+            <h3>{{ user.name }}</h3>
+        </div>
+        <a href="{{ url_for('dashboard') }}" class="btn active">Dashboard</a>
+        <a href="{{ url_for('profile') }}" class="btn">Profile</a>
+        <a href="{{ url_for('all_transactions') }}" class="btn">All Transactions</a>
+        <a href="{{ url_for('ai_insights_page') }}" class="btn">AI Insights</a>
+        <a href="{{ url_for('logout') }}" class="btn logout">Logout</a>
+    </div>
+
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <h2>Dashboard</h2>
+            <button class="btn add-expense" onclick="openPopup()">+</button>
+        </div>
+
+        <!-- Totals Cards -->
+        <div class="cards">
+            <div class="card">
+                <h3>Today</h3>
+                <p>{{ daily_total }} {{ user.currency }}</p>
+            </div>
+            <div class="card">
+                <h3>This Week</h3>
+                <p>{{ weekly_total }} {{ user.currency }}</p>
+            </div>
+            <div class="card">
+                <h3>This Month</h3>
+                <p>{{ monthly_total }} {{ user.currency }}</p>
+            </div>
+        </div>
+<!-- Rule-based Spending Insight -->
+<div class="card" style="padding:20px; margin-top:20px; background:#eef6ff; border-radius:15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+    <h3 style="margin-bottom:15px;">💡 Spending Insight</h3>
+    <ul style="list-style: none; padding-left: 0; line-height: 1.6;">
+        {% for line in insight.split('\n') %}
+            <li style="margin-bottom:8px;">
+                <span style="color:#3b82f6;">•</span> {{ line }}
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+
+
+        <!-- Recent Transactions -->
+        <div class="recent-transactions">
+            <h3>Recent Transactions</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Category</th>
+                        <th>Description</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for expense in expenses[:5] %}
+                    <tr>
+                        <td>{{ expense.date.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ expense.category }}</td>
+                        <td>{{ expense.description }}</td>
+                        <td>{{ expense.amount }} {{ user.currency }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <a href="{{ url_for('all_transactions') }}" class="btn view-all">View All Transactions</a>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts">
+        <div class="chart-container">
+            <canvas id="dailyChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <canvas id="weeklyChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <canvas id="monthlyChart"></canvas>
+        </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Add Expense Popup -->
+<div class="popup" id="expensePopup">
+    <div class="popup-content">
+        <span class="close" onclick="closePopup()">&times;</span>
+        <h3>Add New Expense</h3>
+        <form method="POST" id="popupForm">
+            <div class="input-group">
+                <label>Amount</label>
+                <input type="number" name="amount" step="0.01" required>
+            </div>
+            <div class="input-group">
+                <label>Category</label>
+                <select name="category">
+                    {% for cat in categories %}
+                    <option value="{{ cat }}">{{ cat }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Description</label>
+                <input type="text" name="description">
+            </div>
+            <div class="input-group">
+                <label>Date</label>
+                <input type="date" name="date">
+            </div>
+            <button class="btn" type="submit">Add Expense</button>
+        </form>
+    </div>
+</div>
+
+<script>
+// Popup functions
+function openPopup() {
+    document.getElementById("expensePopup").classList.add("active");
+}
+function closePopup() {
+    document.getElementById("expensePopup").classList.remove("active");
+}
+
+// Charts
+function createPieChart(canvasId, labels, data) {
+    return new Chart(document.getElementById(canvasId), {
+        type: 'pie',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: data,
+                backgroundColor: ['#FFC1CC', '#FFD8A8', '#B8E0D2', '#A0C4FF', '#D8B4FE', '#D3D3D3']
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+}
+
+createPieChart('dailyChart', {{ daily_labels|tojson }}, {{ daily_values|tojson }});
+createPieChart('weeklyChart', {{ weekly_labels|tojson }}, {{ weekly_values|tojson }});
+createPieChart('monthlyChart', {{ monthly_labels|tojson }}, {{ monthly_values|tojson }});
+
+</script>
+
+</body>
+</html>
