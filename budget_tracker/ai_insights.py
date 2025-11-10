@@ -3,6 +3,10 @@ from dotenv import load_dotenv
 from openai import OpenAI
 import json
 
+# Runtime tracking imports
+from provenance import get_tracker, DataType
+from runtime_tracker import get_runtime_tracker
+
 load_dotenv()
 api_key = os.getenv("GROQ_API_KEY")
 
@@ -11,7 +15,7 @@ if not api_key:
 
 client = OpenAI(api_key=api_key, base_url="https://api.groq.com/openai/v1")
 
-def generate_ai_insight(expenses, income, budget_style="Balanced", goals=""):
+def generate_ai_insight(expenses, income, budget_style="Balanced", goals="", user_id=None):
     """
     Generate structured AI insights in JSON format:
     [
@@ -26,12 +30,30 @@ def generate_ai_insight(expenses, income, budget_style="Balanced", goals=""):
     if not expenses:
         return []
 
-    # Summarize spending
+    # Tag personal data for provenance tracking
+    tracker = get_tracker()
+    runtime_tracker = get_runtime_tracker()
+    owner_id = str(user_id) if user_id else "unknown"
+    
+    # Tag income data
+    if income and not tracker.has_tag(income):
+        tracker.tag_object(income, owner_id, DataType.INCOME, "ai_insights")
+    
+    # Tag spending summary (derived data)
     summary = {}
     total_spent = 0
     for e in expenses:
         summary[e.category] = summary.get(e.category, 0) + e.amount
         total_spent += e.amount
+    
+    # Tag the summary as derived data
+    if summary and not tracker.has_tag(summary):
+        tracker.tag_object(summary, owner_id, DataType.DERIVED, "ai_insights")
+        # Propagate tags from source data
+        if income and tracker.has_tag(income):
+            source_tag = tracker.get_tag(income)
+            if source_tag:
+                tracker.propagate_tag(income, summary, "aggregation")
 
     spent_pct = (total_spent / income * 100) if income > 0 else 0
 
@@ -52,6 +74,13 @@ Return 3–5 actionable insights in **JSON array** format. Each insight must con
 - action_steps (list of 2–4 steps)
 Do not include any extra text outside the JSON array.
 """
+    
+    # Tag the prompt string itself (contains personal data)
+    if not tracker.has_tag(prompt):
+        tracker.tag_object(prompt, owner_id, DataType.DERIVED, "ai_insights_prompt")
+        # Propagate from source data
+        if income and tracker.has_tag(income):
+            tracker.propagate_tag(income, prompt, "prompt_construction")
 
     try:
         response = client.responses.create(

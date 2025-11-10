@@ -23,6 +23,14 @@ load_dotenv()
 
 from ai_insights import generate_ai_insight, generate_rule_based_insight
 
+# Runtime tracking imports
+from runtime_tracker import start_tracking
+from database_provenance import db, ProvenanceRecord, AuditLog, store_provenance_record, store_audit_event
+from audit_logger import set_storage_callback
+from data_tagger import auto_tag_request_data, tag_user_model
+from provenance import get_tracker
+from provenance_viewer import provenance_bp
+
 
 
 
@@ -32,8 +40,32 @@ CATEGORIES = ["Food", "Transport", "Entertainment", "Bills", "Shopping", "Other"
 app.config.from_object(Config)
 db.init_app(app)
 
+# Register provenance blueprint
+app.register_blueprint(provenance_bp)
+
 with app.app_context():
     db.create_all()
+    # Create provenance tables
+    try:
+        db.create_all()
+    except:
+        pass
+
+# Initialize runtime tracking
+start_tracking()
+
+# Set up storage callbacks for audit logging
+set_storage_callback(store_audit_event)
+
+# Before request hook to auto-tag incoming data
+@app.before_request
+def tag_incoming_data():
+    """Automatically tag personal data from incoming requests"""
+    try:
+        auto_tag_request_data()
+    except Exception as e:
+        # Don't break the app if tagging fails
+        pass
 
 # ---------------- Home ----------------
 @app.route('/')
@@ -131,6 +163,16 @@ def signup():
 
         db.session.add(new_user)
         db.session.commit()
+        
+        # Tag user data for provenance tracking
+        try:
+            tag_user_model(new_user)
+            # Store provenance records
+            tracker = get_tracker()
+            for tag in tracker.get_tags_by_owner(str(new_user.id)):
+                store_provenance_record(tag)
+        except Exception as e:
+            pass  # Don't break app if tagging fails
 
         session['user_id'] = new_user.id
         return redirect(url_for('dashboard'))
@@ -292,12 +334,20 @@ def ai_insights_page():
     user = User.query.get(session['user_id'])
     expenses = Expense.query.filter_by(user_id=user.id).order_by(Expense.date.desc()).all()
 
+    # Tag user data if not already tagged
+    try:
+        if not get_tracker().has_tag(user):
+            tag_user_model(user)
+    except:
+        pass
+    
     # Generate AI insights
     ai_insight = generate_ai_insight(
         expenses=expenses,
         income=user.income,
         budget_style=user.budget_style,
-        goals=user.goals
+        goals=user.goals,
+        user_id=user.id
     )
 
     return render_template('ai_insights.html', user=user, ai_insight=ai_insight)
