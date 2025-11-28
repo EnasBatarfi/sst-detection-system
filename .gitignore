@@ -4,3 +4,4 @@ git rm --cached budget_tracker/.env
 .env.*.local
 .env*
 python-prov/
+python-prov/lib/python3.11/site-packages/torch/lib/libtorch_cpu.dylib
