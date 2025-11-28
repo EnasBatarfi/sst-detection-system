@@ -24,6 +24,8 @@ load_dotenv()
 from ai_insights import generate_ai_insight, generate_rule_based_insight
 
 
+import sys
+print(">>> USING PYTHON:", sys.executable)
 
 
 app = Flask(__name__)
@@ -66,7 +68,6 @@ def signup():
         for key in form_data.keys():
             form_data[key] = request.form.get(key, '').strip()
 
-        # ===== VALIDATION =====
         # Name
         if not form_data['name']:
             errors['name'] = "Please enter your full name."
@@ -115,10 +116,10 @@ def signup():
             )
 
         # ===== CREATE USER =====
-        hashed_pw = generate_password_hash(password)
+        hashed_pw = generate_password_hash(password, method="pbkdf2:sha256")
         new_user = User(
-            name=form_data['name'],
             email=form_data['email'].lower(),
+            name=form_data['name'],
             password_hash=hashed_pw,
             birthday=birthday,
             gender=form_data['gender'],
@@ -128,6 +129,8 @@ def signup():
             goals=form_data['goals'],
             week_start=form_data['week_start']
         )
+
+        print("DEBUG signup income:", new_user.income)
 
         db.session.add(new_user)
         db.session.commit()
@@ -144,6 +147,7 @@ def signup():
 def login():
     errors = {}
     email_value = ""
+    
 
     if request.method == 'POST':
         email_value = request.form.get('email', '').strip()
@@ -158,9 +162,15 @@ def login():
         # If no errors → login success
         if not errors:
             session['user_id'] = user.id
-            return redirect(url_for('dashboard'))
+            _ = user.email  # to trigger taint tracking
+            print ("DEBUG login gender:", user.gender)
 
+            some_num=500
+            print("Hello this is shouldn't be tainted:", some_num)
+            return redirect(url_for('dashboard'))
+        
     return render_template('login.html', errors=errors, email=email_value)
+    
 
 
 
@@ -171,7 +181,8 @@ def dashboard():
         return redirect(url_for('login'))
 
     user = User.query.get(session['user_id'])
-
+    # _ = user.email  # to trigger taint tracking
+    print("DEBUG income:", user.income)
     if request.method == 'POST':
         amount = float(request.form['amount'])
         category = request.form['category']
@@ -311,4 +322,4 @@ def logout():
 
 if __name__ == '__main__':
     app.secret_key = Config.SECRET_KEY
-    app.run(debug=True)
+    app.run(debug=True, use_reloader=False)

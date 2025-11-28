@@ -1,0 +1,5 @@
+{
+    "files.associations": {
+        "tracemalloc.h": "c"
+    }
+}
