@@ -73,32 +73,58 @@ PyAPI_FUNC(void) _PyProv_Tag(PyObject *obj) {
 }
 
 
-PyAPI_FUNC(void) _PyProv_TagOwned(PyObject *obj, const char *owner) {
-    if (!obj) return;
-    ProvEntry *e = lookup(obj, 1);
-    if (!e) return;
+static int
+_pv_is_plausible_email(const char *s) {
+    if (!s || !*s) {
+        return 0;
+    }
+    const char *at  = strchr(s, '@');
+    if (!at || at == s) {
+        return 0;
+    }
+    const char *dot = strchr(at + 1, '.');
+    if (!dot || dot[1] == '\0') {
+        return 0;
+    }
+    /* Filter out obvious junk you have seen */
+    if (strcmp(s, "<unknown>") == 0) return 0;
+    if (strcmp(s, "@:") == 0) return 0;
+    return 1;
+}
 
-    /* If no explicit owner, try the current thread owner */
+PyAPI_FUNC(void) _PyProv_TagOwned(PyObject *obj, const char *owner) {
+    if (!obj) {
+        return;
+    }
+
+    /* Resolve owner: explicit or thread-local */
     const char *effective_owner = owner;
     if (!effective_owner || !*effective_owner) {
         const char *cur = _PyProv_GetCurrentOwner();
         if (cur && *cur) {
             effective_owner = cur;
         } else {
-            effective_owner = "<unknown>";
+            /* No identity, do not tag at all */
+            return;
         }
+    }
+
+    /* Require a plausible email, otherwise skip tagging */
+    if (!_pv_is_plausible_email(effective_owner)) {
+        return;
+    }
+
+    ProvEntry *e = lookup(obj, 1);
+    if (!e) {
+        return;
     }
 
     e->tag = 1;
     strncpy(e->owner, effective_owner, sizeof(e->owner) - 1);
     e->owner[sizeof(e->owner) - 1] = '\0';
 
-    /* 👇 If this looks like a user identity (e.g. email), set it as current owner */
-    if (strchr(effective_owner, '@')) {
-        _PyProv_SetCurrentOwnerInternal(effective_owner);
-    }
-
-    // fprintf(stderr, "[DEBUG] Tagging obj=%p owner=%s\n", (void *)obj, e->owner);
+    /* Also set thread-local current owner */
+    _PyProv_SetCurrentOwnerInternal(effective_owner);
 }
 
 
@@ -111,14 +137,30 @@ PyAPI_FUNC(ProvTag) _PyProv_Get(PyObject *obj) {
 }
 
 PyAPI_FUNC(const char *) _PyProv_GetOwner(PyObject *obj) {
-    if (!obj) return "<unknown>";
+    if (!obj) {
+        return NULL;
+    }
     ProvEntry *e = lookup(obj, 0);
     if (!e || !e->tag || e->owner[0] == '\0') {
-        return "<unknown>";
+        return NULL;
     }
     return e->owner;
 }
 
+PyAPI_FUNC(void) _PyProv_ClearObject(PyObject *obj) {
+    if (!obj) {
+        return;
+    }
+    ProvEntry *e = lookup(obj, 0);
+    if (!e) {
+        return;
+    }
+    /* Do NOT clear e->key (that breaks open addressing).
+       Just reset tag and owner so this pointer is considered clean
+       if memory is reused for a new object. */
+    e->tag = 0;
+    e->owner[0] = '\0';
+}
 /* Propagation */
 
 PyAPI_FUNC(void) _PyProv_Propagate(PyObject *result, PyObject *a, PyObject *b) {
@@ -167,6 +209,7 @@ PyAPI_FUNC(void) _PyProv_LogIfSensitive(const char *sink, PyObject *obj) {
         const char *s = PyUnicode_AsUTF8AndSize(obj, &size);
 
         if (s && size > 0) {
+            /* Ignore single chars and whitespace-only writes */
             if (size <= 1 || strspn(s, " \n\r\t") == (size_t)size) {
                 return;
             }
@@ -176,22 +219,16 @@ PyAPI_FUNC(void) _PyProv_LogIfSensitive(const char *sink, PyObject *obj) {
     int tag = _PyProv_Get(obj);
     const char *owner = NULL;
 
+    /* If object is tagged in our table, use that owner */
     if (tag) {
         owner = _PyProv_GetOwner(obj);
-        /* Treat obviously useless owners as "no owner" */
-        if (!owner || !owner[0] ||
-            strcmp(owner, "<unknown>") == 0 ||
-            strcmp(owner, "@:") == 0) {
-            tag = 0;
-            owner = NULL;
-        }
     }
 
-    /* Always try to extract emails from the actual string content */
+    /* Fallback: inspect the actual string and extract ALL emails */
     char merged[512];
     merged[0] = '\0';
 
-    if (PyUnicode_Check(obj)) {
+    if (!tag && PyUnicode_Check(obj)) {
         Py_ssize_t size;
         const char *s = PyUnicode_AsUTF8AndSize(obj, &size);
         if (s && size > 0) {
@@ -204,24 +241,17 @@ PyAPI_FUNC(void) _PyProv_LogIfSensitive(const char *sink, PyObject *obj) {
                     break;
                 }
 
-                /* Expand left to (rough) email start, skipping punctuation */
+                /* Expand left to email start */
                 const char *start = at;
-                while (start > s &&
-                       start[-1] != ' ' && start[-1] != '\n' &&
-                       start[-1] != '\t' && start[-1] != ',' &&
-                       start[-1] != '\'' && start[-1] != '"') {
+                while (start > s && start[-1] != ' ' && start[-1] != '\n' && start[-1] != '\t')
                     start--;
-                }
 
-                /* Expand right to (rough) email end, skipping punctuation */
+                /* Expand right to email end */
                 const char *stop = at;
-                while (stop < end &&
-                       *stop != ' ' && *stop != '\n' &&
-                       *stop != '\t' && *stop != ',' &&
-                       *stop != '\'' && *stop != '"') {
+                while (stop < end && *stop != ' ' && *stop != '\n' && *stop != '\t')
                     stop++;
-                }
 
+                /* Extract this email */
                 char email[128];
                 size_t len = (size_t)(stop - start);
                 if (len >= sizeof(email)) {
@@ -230,26 +260,28 @@ PyAPI_FUNC(void) _PyProv_LogIfSensitive(const char *sink, PyObject *obj) {
                 memcpy(email, start, len);
                 email[len] = '\0';
 
+                /* Append to merged list */
                 if (merged[0] != '\0') {
                     strncat(merged, ",", sizeof(merged) - strlen(merged) - 1);
                 }
                 strncat(merged, email, sizeof(merged) - strlen(merged) - 1);
 
+                /* Continue scanning after this email */
                 p = stop;
             }
-        }
 
-        if (merged[0] != '\0') {
-            /* Prefer email(s) found in the string over any previous junk */
-            owner = merged;
-            tag = 1;
+            if (merged[0] != '\0') {
+                owner = merged;
+                tag = 1; /* treat as sensitive */
+                
+            }
         }
     }
-
     /* If still not sensitive, bail out: treat as clean */
     if (!tag || !owner) {
-        return;
+        return;  // do not log, no provenance
     }
+
 
     /* Build readable data representation */
     PyObject *repr = PyObject_Str(obj);
@@ -261,8 +293,12 @@ PyAPI_FUNC(void) _PyProv_LogIfSensitive(const char *sink, PyObject *obj) {
         data_str = "<repr-error>";
     }
 
+
     fprintf(stderr, "[PROVENANCE] Sink=%s Owner=%s Data='%s'\n",
             sink, owner, data_str);
 
     Py_XDECREF(repr);
+}
+PyAPI_FUNC(void) _PyProv_ClearCurrentOwner(void) {
+    current_owner[0] = '\0';
 }

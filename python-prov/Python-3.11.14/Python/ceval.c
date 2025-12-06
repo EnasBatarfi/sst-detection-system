@@ -1632,6 +1632,8 @@ _PyEval_EvalFrameDefault(PyThreadState *tstate, _PyInterpreterFrame *frame, int 
 {
     _Py_EnsureTstateNotNULL(tstate);
     CALL_STAT_INC(pyeval_calls);
+    
+    _PyProv_ClearCurrentOwner(); 
 
 #if USE_COMPUTED_GOTOS
 /* Import the static jump table */

@@ -449,6 +449,12 @@ PyObject_Repr(PyObject *v)
         return NULL;
     }
 #endif
+
+    /* === Provenance: propagate v → res === */
+    if (res) {
+        _PyProv_Propagate(res, v, NULL);
+    }
+    /* === End provenance === */
     return res;
 }
 
@@ -509,6 +515,11 @@ PyObject_Str(PyObject *v)
     }
 #endif
     assert(_PyUnicode_CheckConsistency(res, 1));
+    /* === Provenance: propagate v → res === */
+    if (res) {
+        _PyProv_Propagate(res, v, NULL);
+    }
+    /* === End provenance === */
     return res;
 }
 
@@ -2466,6 +2477,7 @@ _PyObject_AssertFailed(PyObject *obj, const char *expr, const char *msg,
 void
 _Py_Dealloc(PyObject *op)
 {
+    _PyProv_ClearObject(op);
     PyTypeObject *type = Py_TYPE(op);
     destructor dealloc = type->tp_dealloc;
 #ifdef Py_DEBUG

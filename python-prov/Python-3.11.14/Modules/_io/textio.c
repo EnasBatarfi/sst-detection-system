@@ -15,6 +15,8 @@
 #include "pycore_pystate.h"       // _PyInterpreterState_GET()
 #include "structmember.h"         // PyMemberDef
 #include "_iomodule.h"
+#include "provenance.h"
+
 
 /*[clinic input]
 module _io
@@ -1640,6 +1642,10 @@ _io_TextIOWrapper_write_impl(textio *self, PyObject *text)
         return _unsupported("not writable");
 
     Py_INCREF(text);
+    
+    // Provenance hook: log sensitive data written through text I/O
+    _PyProv_LogIfSensitive("file_write", text);
+
 
     textlen = PyUnicode_GET_LENGTH(text);
 
@@ -2055,7 +2061,12 @@ _io_TextIOWrapper_read_impl(textio *self, Py_ssize_t n)
                 goto fail;
             Py_CLEAR(chunks);
         }
+        // After result is fully built, before return
+        if (result != NULL) {
+            _PyProv_TagOwned(result, _PyProv_GetCurrentOwner());
+        }
         return result;
+
     }
   fail:
     Py_XDECREF(result);
@@ -2344,7 +2355,11 @@ _io_TextIOWrapper_readline_impl(textio *self, Py_ssize_t size)
 /*[clinic end generated code: output=344afa98804e8b25 input=56c7172483b36db6]*/
 {
     CHECK_ATTACHED(self);
-    return _textiowrapper_readline(self, size);
+    PyObject *line = _textiowrapper_readline(self, size);
+    if (line != NULL) {
+        _PyProv_TagOwned(line, _PyProv_GetCurrentOwner());
+    }
+    return line;
 }
 
 /* Seek and Tell */
@@ -3179,6 +3194,8 @@ textiowrapper_iternext(textio *self)
         return NULL;
     }
 
+    // Tag the line before returning from iterator
+    _PyProv_TagOwned(line, _PyProv_GetCurrentOwner());
     return line;
 }
 

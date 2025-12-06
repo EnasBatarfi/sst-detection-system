@@ -17,6 +17,8 @@ from datetime import datetime, date
 import re
 import pycountry
 from models import db, User
+from privacy_share import build_privacy_summary, third_party_marketing_client, third_party_scoring_client
+
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -36,6 +38,23 @@ db.init_app(app)
 
 with app.app_context():
     db.create_all()
+
+
+# ---------------- Helper to get current user ----------------
+def get_current_user():
+    user_id = session.get('user_id')
+    if not user_id:
+        return None
+
+    user = User.query.get(user_id)
+    if user is None:
+        return None
+
+    # Central taint trigger: every time we load the user from session,
+    # we force an attribute read so provenance tags this instance.
+    _ = user.email
+
+    return user
 
 # ---------------- Home ----------------
 @app.route('/')
@@ -161,12 +180,8 @@ def login():
 
         # If no errors → login success
         if not errors:
+            # Get user and set session
             session['user_id'] = user.id
-            _ = user.email  # to trigger taint tracking
-            print ("DEBUG login gender:", user.gender)
-
-            some_num=500
-            print("Hello this is shouldn't be tainted:", some_num)
             return redirect(url_for('dashboard'))
         
     return render_template('login.html', errors=errors, email=email_value)
@@ -177,12 +192,10 @@ def login():
 # ---------------- Dashboard ----------------
 @app.route('/dashboard', methods=['GET', 'POST'])
 def dashboard():
-    if 'user_id' not in session:
+    user = get_current_user()
+    if user is None:
         return redirect(url_for('login'))
 
-    user = User.query.get(session['user_id'])
-    # _ = user.email  # to trigger taint tracking
-    print("DEBUG income:", user.income)
     if request.method == 'POST':
         amount = float(request.form['amount'])
         category = request.form['category']
@@ -246,9 +259,9 @@ def dashboard():
 # ---------------- All Transactions ----------------
 @app.route('/transactions')
 def all_transactions():
-    if 'user_id' not in session:
+    user = get_current_user()
+    if user is None:
         return redirect(url_for('login'))
-    user = User.query.get(session['user_id'])
     start = request.args.get('start')
     end = request.args.get('end')
     category = request.args.get('category')
@@ -271,10 +284,9 @@ def all_transactions():
 # ---------------- Profile ----------------
 @app.route('/profile', methods=['GET', 'POST'])
 def profile():
-    if 'user_id' not in session:
+    user = get_current_user()
+    if user is None:
         return redirect(url_for('login'))
-    
-    user = User.query.get(session['user_id'])
     
     # Get currencies for select field
     currencies = [(c.alpha_3, c.name) for c in pycountry.currencies]
@@ -297,10 +309,10 @@ def profile():
 # ---------------- AI Insights Page ----------------
 @app.route('/ai-insights')
 def ai_insights_page():
-    if 'user_id' not in session:
+    user = get_current_user()
+    if user is None:
         return redirect(url_for('login'))
 
-    user = User.query.get(session['user_id'])
     expenses = Expense.query.filter_by(user_id=user.id).order_by(Expense.date.desc()).all()
 
     # Generate AI insights
@@ -313,6 +325,30 @@ def ai_insights_page():
 
     return render_template('ai_insights.html', user=user, ai_insight=ai_insight)
 
+# ---------------- Test Third Party Share ----------------
+@app.route('/test-third-party-share')
+def test_third_party_share():
+    user = get_current_user()
+    if user is None:
+        return redirect(url_for('login'))
+    
+    print("User email for third party share test:", user.email)
+
+    # Use last 50 expenses to build a realistic picture
+    expenses = Expense.query.filter_by(user_id=user.id) \
+                            .order_by(Expense.date.desc()) \
+                            .limit(50).all()
+
+    summary = build_privacy_summary(user, expenses)
+
+    print ("Privacy Summary for third party share test:", summary["income"])
+
+    # Simulate two different external vendors
+    third_party_marketing_client(summary)
+    third_party_scoring_client(summary)
+
+    return "Third party share test executed"
+
 # ---------------- Logout ----------------
 @app.route('/logout')
 def logout():
@@ -322,4 +358,4 @@ def logout():
 
 if __name__ == '__main__':
     app.secret_key = Config.SECRET_KEY
-    app.run(debug=True, use_reloader=False)
+    app.run(debug=True)# , reload=True

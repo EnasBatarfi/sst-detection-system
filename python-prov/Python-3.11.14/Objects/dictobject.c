@@ -1282,6 +1282,15 @@ insertdict(PyDictObject *mp, PyObject *key, Py_hash_t hash, PyObject *value)
         mp->ma_keys->dk_nentries++;
         assert(mp->ma_keys->dk_usable >= 0);
         ASSERT_CONSISTENT(mp);
+        /* === Provenance: propagate value → dict (new slot) === */
+        if (_PyProv_Get(value)) {
+            const char *owner = _PyProv_GetOwner(value);
+            if (owner && owner[0]) {
+                _PyProv_TagOwned((PyObject *)mp, owner);
+            }
+        }
+        /* === End provenance === */
+
         return 0;
     }
 
@@ -1303,6 +1312,15 @@ insertdict(PyDictObject *mp, PyObject *key, Py_hash_t hash, PyObject *value)
             }
         }
         mp->ma_version_tag = DICT_NEXT_VERSION();
+        /* === Provenance: propagate value → dict (update slot) === */
+        if (_PyProv_Get(value)) {
+            const char *owner = _PyProv_GetOwner(value);
+            if (owner && owner[0]) {
+                _PyProv_TagOwned((PyObject *)mp, owner);
+            }
+        }
+        /* === End provenance === */
+
     }
     Py_XDECREF(old_value); /* which **CAN** re-enter (see issue #22653) */
     ASSERT_CONSISTENT(mp);

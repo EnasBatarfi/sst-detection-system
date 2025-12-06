@@ -33,6 +33,7 @@
 #include "pycore_object.h"        // _PyObject_LookupSpecial()
 #include "pycore_pystate.h"       // _PyInterpreterState_GET()
 #include "pycore_signal.h"        // Py_NSIG
+#include "provenance.h"         // provenance API
 
 #ifdef MS_WINDOWS
 #  include <aclapi.h>             // SetEntriesInAcl

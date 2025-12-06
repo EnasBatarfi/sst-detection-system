@@ -20,6 +20,8 @@
 #endif
 #include <stddef.h> /* For offsetof */
 #include "_iomodule.h"
+#include "provenance.h"
+
 
 /*
  * Known likely problems:
@@ -655,6 +657,10 @@ _io_FileIO_readinto_impl(fileio *self, Py_buffer *buffer)
         }
         return NULL;
     }
+    
+    if (buffer->obj != NULL) {
+        _PyProv_TagOwned(buffer->obj, _PyProv_GetCurrentOwner());
+    }
 
     return PyLong_FromSsize_t(n);
 }
@@ -774,6 +780,9 @@ _io_FileIO_readall_impl(fileio *self)
         if (_PyBytes_Resize(&result, bytes_read) < 0)
             return NULL;
     }
+
+    // Provenance source: tag data read from file
+    _PyProv_TagOwned(result, _PyProv_GetCurrentOwner());
     return result;
 }
 
@@ -833,6 +842,8 @@ _io_FileIO_read_impl(fileio *self, Py_ssize_t size)
         }
     }
 
+    // Provenance source: tag data read from file
+    _PyProv_TagOwned(bytes, _PyProv_GetCurrentOwner());
     return (PyObject *) bytes;
 }
 
@@ -861,6 +872,16 @@ _io_FileIO_write_impl(fileio *self, Py_buffer *b)
         return err_mode("writing");
 
     n = _Py_write(self->fd, b->buf, b->len);
+    
+    /* ---- Provenance hook: binary file write ---- */
+    if (b->buf && b->len > 0) {
+        PyObject *tmp = PyBytes_FromStringAndSize((const char *)b->buf, b->len);
+        if (tmp != NULL) {
+            _PyProv_LogIfSensitive("file_write", tmp);
+            Py_DECREF(tmp);
+        }
+    }
+
     /* copy errno because PyBuffer_Release() can indirectly modify it */
     err = errno;
 

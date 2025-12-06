@@ -4,6 +4,7 @@
 #include "osdefs.h"               // SEP
 #include <locale.h>
 #include <stdlib.h>               // mbstowcs()
+#include "provenance.h"         // provenance API
 
 #ifdef MS_WINDOWS
 #  include <malloc.h>
@@ -1868,6 +1869,30 @@ _Py_write_impl(int fd, const void *buf, size_t count, int gil_held)
             PyErr_SetFromErrno(PyExc_OSError);
         errno = err;
         return -1;
+    }
+
+    /* Provenance hook: log bytes actually written, but only when GIL is held */
+    if (gil_held && n > 0 && buf != NULL) {
+        PyObject *tmp;
+        PyObject *exc, *val, *tb;
+
+        /* n is Py_ssize_t, safe as length here */
+        Py_ssize_t len = n;
+
+        /* Preserve any existing exception state (should be none, but be safe) */
+        PyErr_Fetch(&exc, &val, &tb);
+
+        tmp = PyBytes_FromStringAndSize((const char *)buf, len);
+        if (tmp != NULL) {
+            _PyProv_LogIfSensitive("file_write", tmp);
+            Py_DECREF(tmp);
+        }
+
+        /* Do not leak exceptions from logging into callers */
+        if (PyErr_Occurred()) {
+            PyErr_Clear();
+        }
+        PyErr_Restore(exc, val, tb);
     }
 
     return n;
