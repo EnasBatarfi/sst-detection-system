@@ -48,3 +48,23 @@ Goals: Save for trip
 Payload: text
 Vendor: marketing_platform_v1
 
+[Marketing Share]
+Timestamp: 2025-12-12T15:05:05.612187Z
+User: Enas Mohammed Batarfi <enasmbatarfi@gmail.com>
+Segments: Food, Entertainment, Salary, Transport, Shopping, Bills
+Total spend: 126967.0
+Budget style: Balanced
+Goals: Vacation
+Payload: text
+Vendor: marketing_platform_v1
+
+[Marketing Share]
+Timestamp: 2025-12-12T15:07:40.634068Z
+User: Ahmed <ahmed@example.com>
+Segments: Bills
+Total spend: 200.0
+Budget style: Conservative
+Goals: Buy a car
+Payload: text
+Vendor: marketing_platform_v1
+

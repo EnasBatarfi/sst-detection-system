@@ -1,0 +1,115 @@
+{
+  "sink": "socket_send",
+  "ts": "2025-12-12T10:04:57Z",
+  "source": "budget_tracker",
+  "pid": 78363,
+  "owners": [
+    "enasmbatarfi@gmail.com"
+  ],
+  "data": "POST /openai/v1/chat/completions HTTP/1.1"
+}
+{
+  "sink": "socket_send",
+  "ts": "2025-12-12T10:04:57Z",
+  "source": "budget_tracker",
+  "pid": 78363,
+  "owners": [
+    "enasmbatarfi@gmail.com"
+  ],
+  "data": "{\"model\": \"qwen/qwen3-32b\", \"messages\": [{\"role\": \"system\", \"content\": \"You are a concise financial assistant.\"}, {\"role\": \"user\", \"content\": \"\\nYou are a helpful financial assistant.\\n\\nUser data:\\n- Income: $10000.00\\n- Total Spent: $126967.00 (1269.7% of income)\\n- Spending Breakdown: {'Food': 517.0, 'Entertainment': 20000.0, 'Salary': 101000.0, 'Transport': 50.0, 'Shopping': 400.0, 'Bills': 5000.0}\\n- Budget Style: Balanced\\n- Goal: Vacation\\n\\nReturn 3\\u20135 actionable insights in JSON array format. Each insight must contain:\\n- title\\n- problem\\n- action_steps (list of 2\\u20134 steps)\\nDo not include any extra text outside the JSON array.\\n\"}], \"temperature\": 0.4}"
+}
+{
+  "sink": "file_write",
+  "ts": "2025-12-12T10:05:05Z",
+  "source": "budget_tracker",
+  "pid": 78363,
+  "dest": "/Users/enasbatarfi/sst-detection-system/budget_tracker/shared_with_third_parties/third_party_marketing.txt",
+  "owners": [
+    "enasmbatarfi@gmail.com"
+  ],
+  "data": "[Marketing Share]\nTimestamp: 2025-12-12T15:05:05.612187Z\nUser: Enas Mohammed Batarfi <enasmbatarfi@gmail.com>\nSegments: Food, Entertainment, Salary, Transport, Shopping, Bills\nTotal spend: 126967.0\nBudget style: Balanced\nGoals: Vacation\nPayload: text\nVendor: marketing_platform_v1\n\n"
+}
+{
+  "sink": "file_write",
+  "ts": "2025-12-12T10:05:05Z",
+  "source": "budget_tracker",
+  "pid": 78363,
+  "dest": "/Users/enasbatarfi/sst-detection-system/budget_tracker/shared_with_third_parties/third_party_scoring.txt",
+  "owners": [
+    "enasmbatarfi@gmail.com"
+  ],
+  "data": "[Risk Scoring Share]\nTimestamp: 2025-12-12T15:05:05.618132Z\nAnon ID: 3c08c701d5386831db781ab9361ae26973e93a45158bcf93e54b5a6df46a6330\nMonthly spend: 126967.0\nRisk score: 0.9\nSegments: Food, Entertainment, Salary, Transport, Shopping, Bills\nPayload: text\nVendor: risk_scoring_v1\nFull anon ID: 3c08c701d5386831db781ab9361ae26973e93a45158bcf93e54b5a6df46a6330\n\n"
+}
+{
+  "sink": "socket_send",
+  "ts": "2025-12-12T10:05:07Z",
+  "source": "budget_tracker",
+  "pid": 78363,
+  "owners": [
+    "enasmbatarfi@gmail.com"
+  ],
+  "data": "POST /openai/v1/chat/completions HTTP/1.1"
+}
+{
+  "sink": "socket_send",
+  "ts": "2025-12-12T10:05:07Z",
+  "source": "budget_tracker",
+  "pid": 78363,
+  "owners": [
+    "enasmbatarfi@gmail.com"
+  ],
+  "data": "{\"model\": \"qwen/qwen3-32b\", \"messages\": [{\"role\": \"system\", \"content\": \"You are a concise financial assistant.\"}, {\"role\": \"user\", \"content\": \"\\nYou are a helpful financial assistant.\\n\\nUser data:\\n- Income: $10000.00\\n- Total Spent: $126967.00 (1269.7% of income)\\n- Spending Breakdown: {'Food': 517.0, 'Entertainment': 20000.0, 'Salary': 101000.0, 'Transport': 50.0, 'Shopping': 400.0, 'Bills': 5000.0}\\n- Budget Style: Balanced\\n- Goal: Vacation\\n\\nReturn 3\\u20135 actionable insights in JSON array format. Each insight must contain:\\n- title\\n- problem\\n- action_steps (list of 2\\u20134 steps)\\nDo not include any extra text outside the JSON array.\\n\"}], \"temperature\": 0.4}"
+}
+{
+  "sink": "socket_send",
+  "ts": "2025-12-12T10:05:28Z",
+  "source": "budget_tracker",
+  "pid": 78363,
+  "dest": "<socket>",
+  "owners": [
+    "enasmbatarfi@gmail.com"
+  ],
+  "data": "<!doctype html>"
+}
+{
+  "sink": "socket_send",
+  "ts": "2025-12-12T10:07:26Z",
+  "source": "budget_tracker",
+  "pid": 78363,
+  "owners": [
+    "enasmbatarfi@gmail.com"
+  ],
+  "data": "POST /openai/v1/chat/completions HTTP/1.1"
+}
+{
+  "sink": "socket_send",
+  "ts": "2025-12-12T10:07:26Z",
+  "source": "budget_tracker",
+  "pid": 78363,
+  "owners": [
+    "enasmbatarfi@gmail.com"
+  ],
+  "data": "{\"model\": \"qwen/qwen3-32b\", \"messages\": [{\"role\": \"system\", \"content\": \"You are a concise financial assistant.\"}, {\"role\": \"user\", \"content\": \"\\nYou are a helpful financial assistant.\\n\\nUser data:\\n- Income: $20000.00\\n- Total Spent: $200.00 (1.0% of income)\\n- Spending Breakdown: {'Bills': 200.0}\\n- Budget Style: Conservative\\n- Goal: Buy a car\\n\\nReturn 3\\u20135 actionable insights in JSON array format. Each insight must contain:\\n- title\\n- problem\\n- action_steps (list of 2\\u20134 steps)\\nDo not include any extra text outside the JSON array.\\n\"}], \"temperature\": 0.4}"
+}
+{
+  "sink": "file_write",
+  "ts": "2025-12-12T10:07:40Z",
+  "source": "budget_tracker",
+  "pid": 78363,
+  "dest": "/Users/enasbatarfi/sst-detection-system/budget_tracker/shared_with_third_parties/third_party_marketing.txt",
+  "owners": [
+    "ahmed@example.com"
+  ],
+  "data": "[Marketing Share]\nTimestamp: 2025-12-12T15:07:40.634068Z\nUser: Ahmed <ahmed@example.com>\nSegments: Bills\nTotal spend: 200.0\nBudget style: Conservative\nGoals: Buy a car\nPayload: text\nVendor: marketing_platform_v1\n\n"
+}
+{
+  "sink": "file_write",
+  "ts": "2025-12-12T10:07:40Z",
+  "source": "budget_tracker",
+  "pid": 78363,
+  "dest": "/Users/enasbatarfi/sst-detection-system/budget_tracker/shared_with_third_parties/third_party_scoring.txt",
+  "owners": [
+    "ahmed@example.com"
+  ],
+  "data": "[Risk Scoring Share]\nTimestamp: 2025-12-12T15:07:40.637666Z\nAnon ID: 632bb9bf1171c9a5791a52c340c53d9b71d2a342cd884579c799cefbf5de262b\nMonthly spend: 200.0\nRisk score: 0.2\nSegments: Bills\nPayload: text\nVendor: risk_scoring_v1\nFull anon ID: 632bb9bf1171c9a5791a52c340c53d9b71d2a342cd884579c799cefbf5de262b\n\n"
+}
