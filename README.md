@@ -17,10 +17,11 @@ Unlike browser tools, SST happens entirely on backend servers where users have *
 7. [Running the Demo Application](#running-the-demo-application)
 8. [Viewing Provenance Logs](#viewing-provenance-logs)
 9. [Running the Provenance Test Harness](#running-the-provenance-test-harness)
-10. [Performance Notes](#performance-notes)
-11. [Evaluation Plan](#evaluation-plan)
+10. [Evaluation (Notebook)](#evaluation-notebook)
+11. [Performance Notes](#performance-notes)
 12. [Limitations](#limitations)
 13. [Future Work](#future-work)
+14. [Reproduction Summary (Quick Start)](#reproduction-summary-quick-start)
 
 ---
 
@@ -255,6 +256,20 @@ Artifacts and logs:
 
 ---
 
+
+# **Evaluation (Notebook)**
+
+For a simple performance comparison between baseline and instrumented servers:
+
+1. Start both servers: baseline at `http://127.0.0.1:5001`, instrumented at `http://127.0.0.1:5000`.
+2. Open `evaluation/evaluation.ipynb` using the **baseline** environment (`venv_baseline`).
+3. Run all cells. The notebook verifies endpoints, runs `run_benchmark` on `/dashboard` and `/share`, and shows inline tables plus matplotlib plots (histogram, ECDF, boxplot, throughput bars, percentile bars).
+4. Plots display inline; optionally save them under `evaluation/eval_output/plots/`.
+
+To reduce noise from page assets, page-level logging is disabled in `budget_tracker/app.py`; the notebook focuses only on `/dashboard` and `/share` performance.
+
+---
+
 # **Performance Notes**
 
 This system modifies CPython internals, and **performance overhead is real**.
@@ -281,108 +296,6 @@ Logging-heavy flows slow further because every sink write produces JSON.
 You can measure this (see Evaluation section below).
 
 ---
-
-# **Evaluation Plan**
-
-The goal: verify that the instrumented runtime **detects SST**, logs **all outbound flows**, and keeps **noise/false positives low**.
-
-Below is how to evaluate each metric.
-
-## **1. Detection Rate**
-
-Measure how many intentional shares are logged.
-
-### Method:
-
-```bash
-python budget_tracker/test_provenance.py
-grep '"sink"' prov.log | wc -l
-```
-
-Compare expected vs. observed events.
-
----
-
-## **2. False Positives**
-
-Verify that logs do **not** include:
-
-* clean values
-* non-sensitive file writes
-* helper prints
-* empty writes
-
-### Method:
-
-Search for clean lines:
-
-```bash
-grep -R "clean line" prov.log
-```
-
----
-
-## **3. System Latency**
-
-Measure request latency with and without instrumentation.
-
-### Method (Flask profiling):
-
-```bash
-ab -n 100 -c 1 http://127.0.0.1:5000/dashboard
-```
-
-Compare:
-
-* vanilla CPython
-* instrumented CPython
-
----
-
-## **4. CPU & Memory Overhead**
-
-Profile with `ps`, `top`, or Python’s `resource` module during a workload:
-
-```bash
-python -m cProfile budget_tracker/app.py
-```
-
----
-
-## **5. Storage Overhead**
-
-Measure daily log volume under realistic usage:
-
-```bash
-du -sh prov.log
-```
-
----
-
-## **6. Usability & Developer Burden**
-
-Checklist:
-
-* No application code changes required
-* All tagging occurs automatically
-* Logging is external and unobtrusive
-
----
-
-# **Evaluation (Notebook)**
-
-For a simple performance comparison between baseline and instrumented servers:
-
-1. Start both servers: baseline at `http://127.0.0.1:5001`, instrumented at `http://127.0.0.1:5000`.
-2. Open `evaluation/evaluation.ipynb` using the **baseline** environment (`venv_baseline`).
-3. Run all cells. The notebook verifies endpoints, runs `run_benchmark` on `/dashboard` and `/share`, and shows inline tables plus matplotlib plots (histogram, ECDF, boxplot, throughput bars, percentile bars).
-4. Plots display inline; optionally save them under `evaluation/eval_output/plots/`.
-
-To reduce noise from page assets, page-level logging is disabled in `budget_tracker/app.py`; the notebook focuses only on `/dashboard` and `/share` performance.
-
-
----
-
 # **Limitations**
 
 * Only **emails** are automatically recognized as PII.
