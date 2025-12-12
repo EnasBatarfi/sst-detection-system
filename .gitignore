@@ -3,3 +3,11 @@ git rm --cached budget_tracker/.env
 .env.local
 .env.*.local
 .env*
+# Python envs
+venv/
+venv_baseline/
+.venv/
+
+# Python junk
+__pycache__/
+*.pyc

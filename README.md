@@ -77,7 +77,8 @@ This project introduces **visibility at the runtime level**.
 │   ├── Python-3.11.14/      # Patched CPython source
 │   └── py311-prov/          # Installation directory of instrumented interpreter
 │
-├── venv/                    # Virtualenv bound to instrumented Python
+├── venv/                    # Virtual env bound to instrumented Python
+├── venv_basline             # Basline 3.11.14 virtual env
 │
 ├── budget_tracker/          # Demo Flask application
 │   ├── app.py
@@ -177,7 +178,7 @@ python-prov/py311-prov/bin/python3.11
 
 # **Setting Up the Demo Environment**
 
-### **1. Create a venv that uses the patched interpreter**
+### **1. Create the instrumented venv (patched interpreter)**
 
 ```bash
 python-prov/py311-prov/bin/python3.11 -m venv venv
@@ -187,6 +188,17 @@ pip install -r requirements.txt
 ```
 
 The root `requirements.txt` covers the demo app, provenance viewer, and lightweight evaluation helpers.
+
+### **2. Create the baseline venv (unmodified CPython) for evaluation**
+
+```bash
+python3 -m venv venv_baseline
+source venv_baseline/bin/activate
+pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+Use `venv` for running the instrumented app/tests and `venv_baseline` for running the evaluation notebook (`evaluation/evaluation.ipynb`) and perf comparisons.
 
 ### **2. Enable provenance logging**
 
@@ -329,6 +341,11 @@ make -j8 && make install
 # Create venv
 python-prov/py311-prov/bin/python3.11 -m venv venv
 source venv/bin/activate
+pip install -r requirements.txt
+
+# Create baseline venv
+python3 -m venv venv_baseline
+source venv_baseline/bin/activate
 pip install -r requirements.txt
 
 # Enable logging
