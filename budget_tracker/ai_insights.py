@@ -1,32 +1,18 @@
+"""AI and rule-based insight generators for the budget app."""
+
 import os
-from dotenv import load_dotenv
-from openai import OpenAI
 import json
+import requests
+from dotenv import load_dotenv
 
 load_dotenv()
 api_key = os.getenv("GROQ_API_KEY")
 
-if not api_key:
-    raise ValueError("GROQ_API_KEY is not set in your environment!")
-
-client = OpenAI(api_key=api_key, base_url="https://api.groq.com/openai/v1")
-
 def generate_ai_insight(expenses, income, budget_style="Balanced", goals=""):
-    """
-    Generate structured AI insights in JSON format:
-    [
-        {
-            "title": "...",
-            "problem": "...",
-            "action_steps": ["...", "..."]
-        },
-        ...
-    ]
-    """
     if not expenses:
         return []
 
-    # Summarize spending
+    # summarise spending...
     summary = {}
     total_spent = 0
     for e in expenses:
@@ -35,7 +21,6 @@ def generate_ai_insight(expenses, income, budget_style="Balanced", goals=""):
 
     spent_pct = (total_spent / income * 100) if income > 0 else 0
 
-    # Prompt Groq LLM
     prompt = f"""
 You are a helpful financial assistant.
 
@@ -46,38 +31,82 @@ User data:
 - Budget Style: {budget_style}
 - Goal: {goals}
 
-Return 3–5 actionable insights in **JSON array** format. Each insight must contain:
+Return 3–5 actionable insights in JSON array format. Each insight must contain:
 - title
 - problem
 - action_steps (list of 2–4 steps)
 Do not include any extra text outside the JSON array.
 """
 
-    try:
-        response = client.responses.create(
-            model="openai/gpt-oss-20b",
-            input=prompt
-        )
+    if not api_key:
+        return [{
+            "title": "AI temporarily unavailable",
+            "problem": "Set GROQ_API_KEY to enable AI insights.",
+            "action_steps": [
+                "Check your environment variables.",
+                "Restart after setting GROQ_API_KEY."
+            ]
+        }]
 
-        output_text = response.output_text.strip()
+    try:
+        resp = requests.post(
+            "https://api.groq.com/openai/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+            },
+            json={
+                "model": "qwen/qwen3-32b",
+                "messages": [
+                    {"role": "system", "content": "You are a concise financial assistant."},
+                    {"role": "user",  "content": prompt},
+                ],
+                "temperature": 0.4,
+            },
+            timeout=20,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        content = data["choices"][0]["message"]["content"]
+
+        # Groq reasoning models often wrap output like:
+        # <think> ... </think> [ { ... } ]
+        if isinstance(content, str):
+            if "<think>" in content and "</think>" in content:
+                content = content.split("</think>", 1)[1].strip()
+        else:
+            # if Groq ever returns a list of segments, keep only non reasoning text
+            parts = []
+            for part in content:
+                if part.get("type") == "reasoning":
+                    continue
+                parts.append(part.get("text", ""))
+            content = "".join(parts).strip()
+
         try:
-            insights = json.loads(output_text)
+            insights = json.loads(content)
+            # normalise to list
+            if isinstance(insights, dict):
+                insights = [insights]
+            return insights
         except json.JSONDecodeError:
-            # fallback if AI outputs raw text
-            insights = [{"title": "Insight", "problem": output_text, "action_steps": []}]
-        return insights
+            # last resort: treat everything as one big problem string
+            return [{
+                "title": "Insight",
+                "problem": content.strip(),
+                "action_steps": [],
+            }]
 
     except Exception as e:
         print("AI Insight Error:", e)
-        return [{"title": "Insight Error", "problem": "Couldn't generate insights.", "action_steps": []}]
+        return [{
+            "title": "Insight Error",
+            "problem": "Couldn't generate insights.",
+            "action_steps": [],
+        }]
 
 def generate_rule_based_insight(expenses, income, budget_style="Balanced", goals=""):
-    """
-    Generate concise, realistic, rule-based financial insights:
-    - Focus on top spending categories
-    - Compare spending vs income
-    - Give actionable advice based on essential vs discretionary spending
-    """
+    """Local, deterministic spending summary with 2–4 bullet suggestions."""
     if not expenses:
         return "No spending data yet. Add some expenses to get insights!"
 

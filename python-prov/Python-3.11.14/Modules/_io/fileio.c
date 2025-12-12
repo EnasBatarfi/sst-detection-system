@@ -874,10 +874,28 @@ _io_FileIO_write_impl(fileio *self, Py_buffer *b)
     n = _Py_write(self->fd, b->buf, b->len);
     
     /* ---- Provenance hook: binary file write ---- */
+    char dest[256];
+    dest[0] = '\0';
+    PyObject *nameobj = NULL;
+    if (_PyObject_LookupAttr((PyObject *)self, &_Py_ID(name), &nameobj) >= 0 && nameobj) {
+        if (PyUnicode_Check(nameobj)) {
+            const char *n = PyUnicode_AsUTF8(nameobj);
+            if (n) {
+                strncpy(dest, n, sizeof(dest) - 1);
+                dest[sizeof(dest) - 1] = '\0';
+            }
+        }
+        Py_DECREF(nameobj);
+    }
     if (b->buf && b->len > 0) {
         PyObject *tmp = PyBytes_FromStringAndSize((const char *)b->buf, b->len);
         if (tmp != NULL) {
-            _PyProv_LogIfSensitive("file_write", tmp);
+            const char *sink = "file_write";
+            if (dest[0]) {
+                if (strcmp(dest, "<stdout>") == 0) sink = "stdout";
+                else if (strcmp(dest, "<stderr>") == 0) sink = "stderr";
+            }
+            _PyProv_LogIfSensitive(sink, tmp, dest[0] ? dest : NULL);
             Py_DECREF(tmp);
         }
     }

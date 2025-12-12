@@ -17,12 +17,18 @@
         <a href="{{ url_for('profile') }}" class="btn">Profile</a>
         <a href="{{ url_for('all_transactions') }}" class="btn">All Transactions</a>
         <a href="{{ url_for('ai_insights_page') }}" class="btn active">AI Insights</a>
+        <a href="{{ url_for('share') }}" class="btn">Share Data</a>
         <a href="{{ url_for('logout') }}" class="btn logout">Logout</a>
     </div>
 
-    <!-- Main content -->
+    <!-- Main content: list each AI insight -->
     <div class="main-content">
-        <h2>AI Insights</h2>
+        <div class="top-bar">
+            <h2>AI Insights</h2>
+            <div class="actions">
+                <a class="btn ghost" href="{{ url_for('dashboard') }}">← Back to dashboard</a>
+            </div>
+        </div>
 
         <div class="table-container">
             <table>
@@ -57,7 +63,6 @@
             </table>
         </div>
 
-        <a href="{{ url_for('dashboard') }}" class="view-all">Back to Dashboard</a>
     </div>
 
 </div>

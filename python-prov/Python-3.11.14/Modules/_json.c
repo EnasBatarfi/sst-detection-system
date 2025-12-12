@@ -13,6 +13,7 @@
 #include "pycore_ceval.h"         // _Py_EnterRecursiveCall()
 #include "structmember.h"         // PyMemberDef
 #include "pycore_accu.h"
+#include "provenance.h"
 
 typedef struct {
     PyObject *PyScannerType;
@@ -603,6 +604,10 @@ py_encode_basestring_ascii(PyObject* Py_UNUSED(self), PyObject *pystr)
     /* METH_O */
     if (PyUnicode_Check(pystr)) {
         rval = ascii_escape_unicode(pystr);
+        if (rval) {
+            /* Preserve provenance from source string into the encoded result */
+            _PyProv_Propagate(rval, pystr, NULL);
+        }
     }
     else {
         PyErr_Format(PyExc_TypeError,
@@ -628,6 +633,10 @@ py_encode_basestring(PyObject* Py_UNUSED(self), PyObject *pystr)
     /* METH_O */
     if (PyUnicode_Check(pystr)) {
         rval = escape_unicode(pystr);
+        if (rval) {
+            /* Preserve provenance from source string into the encoded result */
+            _PyProv_Propagate(rval, pystr, NULL);
+        }
     }
     else {
         PyErr_Format(PyExc_TypeError,
@@ -1365,7 +1374,11 @@ encoder_encode_float(PyEncoderObject *s, PyObject *obj)
             return PyUnicode_FromString("NaN");
         }
     }
-    return PyFloat_Type.tp_repr(obj);
+    PyObject *repr = PyFloat_Type.tp_repr(obj);
+    if (repr) {
+        _PyProv_Propagate(repr, obj, NULL);
+    }
+    return repr;
 }
 
 static PyObject *
@@ -1375,7 +1388,11 @@ encoder_encode_string(PyEncoderObject *s, PyObject *obj)
     PyObject *encoded;
 
     if (s->fast_encode) {
-        return s->fast_encode(NULL, obj);
+        PyObject *out = s->fast_encode(NULL, obj);
+        if (out) {
+            _PyProv_Propagate(out, obj, NULL);
+        }
+        return out;
     }
     encoded = PyObject_CallOneArg(s->encoder, obj);
     if (encoded != NULL && !PyUnicode_Check(encoded)) {
@@ -1384,6 +1401,9 @@ encoder_encode_string(PyEncoderObject *s, PyObject *obj)
                      Py_TYPE(encoded)->tp_name);
         Py_DECREF(encoded);
         return NULL;
+    }
+    if (encoded) {
+        _PyProv_Propagate(encoded, obj, NULL);
     }
     return encoded;
 }

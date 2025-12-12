@@ -28,15 +28,17 @@
         <a href="{{ url_for('profile') }}" class="btn active">Profile</a>
         <a href="{{ url_for('all_transactions') }}" class="btn">All Transactions</a>
         <a href="{{ url_for('ai_insights_page') }}" class="btn">AI Insights</a>
+        <a href="{{ url_for('share') }}" class="btn">Share Data</a>
         <a href="{{ url_for('logout') }}" class="btn logout">Logout</a>
     </div>
 
-    <!-- Main content -->
+    <!-- Main content: profile form -->
     <div class="main-content">
         <h2>My Profile</h2>
         <div class="profile-container">
         <div class="profile-card">
             <form method="POST">
+                <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
                 <!-- Name -->
                 <div class="input-group">
                     <label for="name">Full Name</label>

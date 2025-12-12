@@ -1,4 +1,4 @@
-#!/Users/enasbatarfi/sst-detection-system/python-prov/py311-prov/bin/python3.11
+#!/Users/enasbatarfi/sst-detection-system/python-prov/Python-3.11.14/../py311-prov/bin/python3.11
 
 import pydoc
 if __name__ == '__main__':

@@ -1,0 +1,10 @@
+Flask
+Flask-SQLAlchemy
+SQLAlchemy
+Werkzeug
+pycountry
+requests
+python-dotenv
+numpy
+pandas
+matplotlib

@@ -1,0 +1,50 @@
+[Marketing Share]
+Timestamp: 2025-12-12T13:21:56.072295Z
+User: Enas <batarfi@gmail.com>
+Segments: Food
+Total spend: 1210.0
+Budget style: Balanced
+Goals: —
+Payload: text
+Vendor: marketing_platform_v1
+
+[Marketing Share]
+Timestamp: 2025-12-12T13:22:16.164733Z
+User: Enas <batarfi@gmail.com>
+Segments: Food
+Total spend: 1210.0
+Budget style: Balanced
+Goals: —
+Payload: text
+Vendor: marketing_platform_v1
+
+[Marketing Share]
+Timestamp: 2025-12-12T13:22:41.990870Z
+User: Enas Mohammed Batarfi <enasmbatarfi@gmail.com>
+Segments: Food, Entertainment, Salary, Transport, Shopping, Bills
+Total spend: 126967.0
+Budget style: Balanced
+Goals: Vacation
+Payload: text
+Vendor: marketing_platform_v1
+
+[Marketing Share]
+Timestamp: 2025-12-12T13:31:32.645502Z
+User: Alice <alice@example.com>
+Segments: Food, Transport, Entertainment
+Total spend: 245.5
+Budget style: Balanced
+Goals: Save for trip
+Payload: text
+Vendor: marketing_platform_v1
+
+[Marketing Share]
+Timestamp: 2025-12-12T13:34:01.614580Z
+User: Alice <alice@example.com>
+Segments: Food, Transport, Entertainment
+Total spend: 245.5
+Budget style: Balanced
+Goals: Save for trip
+Payload: text
+Vendor: marketing_platform_v1
+

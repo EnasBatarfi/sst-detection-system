@@ -29,6 +29,7 @@
 #include "socketmodule.h"
 
 #include "_ssl.h"
+#include "provenance.h"
 
 /* Redefined below for Windows debug builds after important #includes */
 #define _PySSL_FIX_ERRNO
@@ -2396,6 +2397,15 @@ _ssl__SSLSocket_write_impl(PySSLSocket *self, Py_buffer *b)
         goto error;
     }
 
+    /* Provenance hook: log plaintext before TLS encryption attempts */
+    if (b && b->buf && b->len > 0) {
+        PyObject *data = PyBytes_FromStringAndSize((const char *)b->buf, b->len);
+        if (data) {
+            _PyProv_LogIfSensitive("socket_send", data, NULL);
+            Py_DECREF(data);
+        }
+    }
+
     do {
         PySSL_BEGIN_ALLOW_THREADS
         retval = SSL_write_ex(self->ssl, b->buf, (size_t)b->len, &count);
@@ -2437,7 +2447,8 @@ _ssl__SSLSocket_write_impl(PySSLSocket *self, Py_buffer *b)
         return PySSL_SetError(self, retval, __FILE__, __LINE__);
     if (PySSL_ChainExceptions(self) < 0)
         return NULL;
-    return PyLong_FromSize_t(count);
+    PyObject *res = PyLong_FromSize_t(count);
+    return res;
 error:
     Py_XDECREF(sock);
     PySSL_ChainExceptions(self);

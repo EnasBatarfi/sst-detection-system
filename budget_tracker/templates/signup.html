@@ -9,10 +9,12 @@
 
 <div class="auth-container">
     <div class="auth-box">
+        <!-- Signup form -->
         <h2>Create Your Account 🚀</h2>
         <p class="subtitle">Start tracking your expenses easily</p>
 
         <form method="POST" action="{{ url_for('signup') }}">
+            <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
             <div class="input-group">
                 <label>Name</label>
                 <input type="text" name="name" placeholder="Your full name" value="{{ form_data.name }}" required>

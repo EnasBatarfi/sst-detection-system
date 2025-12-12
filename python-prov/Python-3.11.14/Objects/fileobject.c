@@ -117,13 +117,31 @@ int
 PyFile_WriteObject(PyObject *v, PyObject *f, int flags)
 {
     PyObject *writer, *value, *result;
+    char dest[256];
+    dest[0] = '\0';
 
     if (f == NULL) {
         PyErr_SetString(PyExc_TypeError, "writeobject with NULL file");
         return -1;
     }
     /* === Provenance logging hook === */
-    _PyProv_LogIfSensitive("file_write", v);
+    PyObject *nameobj = NULL;
+    if (_PyObject_LookupAttr(f, &_Py_ID(name), &nameobj) >= 0 && nameobj) {
+        if (PyUnicode_Check(nameobj)) {
+            const char *n = PyUnicode_AsUTF8(nameobj);
+            if (n) {
+                strncpy(dest, n, sizeof(dest) - 1);
+                dest[sizeof(dest) - 1] = '\0';
+            }
+        }
+        Py_DECREF(nameobj);
+    }
+    const char *sink = "file_write";
+    if (dest[0]) {
+        if (strcmp(dest, "<stdout>") == 0) sink = "stdout";
+        else if (strcmp(dest, "<stderr>") == 0) sink = "stderr";
+    }
+    _PyProv_LogIfSensitive(sink, v, dest[0] ? dest : NULL);
     /* === End provenance hook === */
     
     writer = PyObject_GetAttr(f, &_Py_ID(write));

@@ -9,10 +9,12 @@
 
 <div class="auth-container">
     <div class="auth-box">
+        <!-- Login form -->
         <h2>Welcome Back 👋</h2>
         <p class="subtitle">Log in to continue managing your finances</p>
 
       <form method="POST" action="{{ url_for('login') }}">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
     <div class="input-group">
         <label>Email</label>
         <input type="email" name="email" placeholder="Enter your email" value="{{ email or '' }}" required>

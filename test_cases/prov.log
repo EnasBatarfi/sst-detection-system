@@ -1,0 +1,394 @@
+{
+  "sink": "stdout",
+  "ts": "2025-12-12T08:33:59Z",
+  "source": "test_cases",
+  "pid": 72625,
+  "dest": "<stdout>",
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "alice@example.com"
+}
+{
+  "sink": "stdout",
+  "ts": "2025-12-12T08:33:59Z",
+  "source": "test_cases",
+  "pid": 72625,
+  "dest": "<stdout>",
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "30"
+}
+{
+  "sink": "stdout",
+  "ts": "2025-12-12T08:33:59Z",
+  "source": "test_cases",
+  "pid": 72625,
+  "dest": "<stdout>",
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "USA"
+}
+{
+  "sink": "stdout",
+  "ts": "2025-12-12T08:33:59Z",
+  "source": "test_cases",
+  "pid": 72625,
+  "dest": "<stdout>",
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "alice@example.com  --- "
+}
+{
+  "sink": "stdout",
+  "ts": "2025-12-12T08:33:59Z",
+  "source": "test_cases",
+  "pid": 72625,
+  "dest": "<stdout>",
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "alice@example.com"
+}
+{
+  "sink": "stdout",
+  "ts": "2025-12-12T08:33:59Z",
+  "source": "test_cases",
+  "pid": 72625,
+  "dest": "<stdout>",
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "alice@example.com -- verified"
+}
+{
+  "sink": "stdout",
+  "ts": "2025-12-12T08:33:59Z",
+  "source": "test_cases",
+  "pid": 72625,
+  "dest": "<stdout>",
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "alice@example.com"
+}
+{
+  "sink": "stdout",
+  "ts": "2025-12-12T08:33:59Z",
+  "source": "test_cases",
+  "pid": 72625,
+  "dest": "<stdout>",
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "999"
+}
+{
+  "sink": "stdout",
+  "ts": "2025-12-12T08:33:59Z",
+  "source": "test_cases",
+  "pid": 72625,
+  "dest": "<stdout>",
+  "owners": [
+    "alice@example.com"
+    ,"bob@example.com"
+  ],
+  "data": "1024"
+}
+{
+  "sink": "stdout",
+  "ts": "2025-12-12T08:33:59Z",
+  "source": "test_cases",
+  "pid": 72625,
+  "dest": "<stdout>",
+  "owners": [
+    "bob@example.com"
+  ],
+  "data": "25"
+}
+{
+  "sink": "stdout",
+  "ts": "2025-12-12T08:33:59Z",
+  "source": "test_cases",
+  "pid": 72625,
+  "dest": "<stdout>",
+  "owners": [
+    "bob@example.com"
+  ],
+  "data": "Canada - North America"
+}
+{
+  "sink": "stdout",
+  "ts": "2025-12-12T08:33:59Z",
+  "source": "test_cases",
+  "pid": 72625,
+  "dest": "<stdout>",
+  "owners": [
+    "bob@example.com"
+    ,"alice@example.com"
+  ],
+  "data": "-0.5"
+}
+{
+  "sink": "stdout",
+  "ts": "2025-12-12T08:33:59Z",
+  "source": "test_cases",
+  "pid": 72625,
+  "dest": "<stdout>",
+  "owners": [
+    "bob@example.com"
+  ],
+  "data": "1600.0"
+}
+{
+  "sink": "stdout",
+  "ts": "2025-12-12T08:33:59Z",
+  "source": "test_cases",
+  "pid": 72625,
+  "dest": "<stdout>",
+  "owners": [
+    "bob@example.com"
+  ],
+  "data": "600.5"
+}
+{
+  "sink": "stdout",
+  "ts": "2025-12-12T08:33:59Z",
+  "source": "test_cases",
+  "pid": 72625,
+  "dest": "<stdout>",
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "30"
+}
+{
+  "sink": "stdout",
+  "ts": "2025-12-12T08:33:59Z",
+  "source": "test_cases",
+  "pid": 72625,
+  "dest": "<stdout>",
+  "owners": [
+    "alice@example.com"
+    ,"bob@example.com"
+  ],
+  "data": "1029"
+}
+{
+  "sink": "file_write",
+  "ts": "2025-12-12T08:33:59Z",
+  "source": "test_cases",
+  "pid": 72625,
+  "dest": "/Users/enasbatarfi/sst-detection-system/test_cases/output_files/test_text.txt",
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "999"
+}
+{
+  "sink": "file_write",
+  "ts": "2025-12-12T08:33:59Z",
+  "source": "test_cases",
+  "pid": 72625,
+  "dest": "/Users/enasbatarfi/sst-detection-system/test_cases/output_files/test_json.json",
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "999"
+}
+{
+  "sink": "file_write",
+  "ts": "2025-12-12T08:33:59Z",
+  "source": "test_cases",
+  "pid": 72625,
+  "dest": "/Users/enasbatarfi/sst-detection-system/test_cases/output_files/test_json3.json",
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "\"999\""
+}
+{
+  "sink": "file_write",
+  "ts": "2025-12-12T08:33:59Z",
+  "source": "test_cases",
+  "pid": 72625,
+  "dest": "/Users/enasbatarfi/sst-detection-system/test_cases/output_files/test_json2.json",
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "999"
+}
+{
+  "sink": "file_write",
+  "ts": "2025-12-12T08:33:59Z",
+  "source": "test_cases",
+  "pid": 72625,
+  "dest": "/Users/enasbatarfi/sst-detection-system/test_cases/output_files/test_path.txt",
+  "owners": [
+    "bob@example.com"
+  ],
+  "data": "from_path: 25"
+}
+{
+  "sink": "file_write",
+  "ts": "2025-12-12T08:33:59Z",
+  "source": "test_cases",
+  "pid": 72625,
+  "dest": "/Users/enasbatarfi/sst-detection-system/test_cases/output_files/test_append.log",
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "append age 999\n"
+}
+{
+  "sink": "stdout",
+  "ts": "2025-12-12T08:33:59Z",
+  "source": "test_cases",
+  "pid": 72625,
+  "dest": "<stdout>",
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "stdout test: 999\n"
+}
+{
+  "sink": "stderr",
+  "ts": "2025-12-12T08:33:59Z",
+  "source": "test_cases",
+  "pid": 72625,
+  "dest": "<stderr>",
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "stderr test: 999\n"
+}
+{
+  "sink": "stderr",
+  "ts": "2025-12-12T08:33:59Z",
+  "source": "test_cases",
+  "pid": 72625,
+  "dest": "<stderr>",
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "WARNING:root:log test: 999\n"
+}
+{
+  "sink": "socket_send",
+  "ts": "2025-12-12T08:33:59Z",
+  "source": "test_cases",
+  "pid": 72625,
+  "dest": "<socket>",
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "email: 999"
+}
+{
+  "sink": "socket_send",
+  "ts": "2025-12-12T08:33:59Z",
+  "source": "test_cases",
+  "pid": 72625,
+  "dest": "<socket>",
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "GET /?q=999 HTTP/1.1"
+}
+{
+  "sink": "socket_send",
+  "ts": "2025-12-12T08:33:59Z",
+  "source": "test_cases",
+  "pid": 72625,
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "POST /insights HTTP/1.1"
+}
+{
+  "sink": "socket_send",
+  "ts": "2025-12-12T08:33:59Z",
+  "source": "test_cases",
+  "pid": 72625,
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "{\"user\": \"alice@example.com\", \"goal\": \"Save for trip\"}"
+}
+{
+  "sink": "socket_send",
+  "ts": "2025-12-12T08:34:00Z",
+  "source": "test_cases",
+  "pid": 72625,
+  "dest": "<socket>",
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "POST /collect HTTP/1.1"
+}
+{
+  "sink": "socket_send",
+  "ts": "2025-12-12T08:34:00Z",
+  "source": "test_cases",
+  "pid": 72625,
+  "dest": "<socket>",
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "email=alice%40example.com"
+}
+{
+  "sink": "socket_send",
+  "ts": "2025-12-12T08:34:00Z",
+  "source": "test_cases",
+  "pid": 72625,
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "POST /metrics HTTP/1.1"
+}
+{
+  "sink": "socket_send",
+  "ts": "2025-12-12T08:34:00Z",
+  "source": "test_cases",
+  "pid": 72625,
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "{\"user\": \"alice@example.com\", \"goal\": \"Save for trip\"}"
+}
+{
+  "sink": "socket_send",
+  "ts": "2025-12-12T08:34:00Z",
+  "source": "test_cases",
+  "pid": 72625,
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "GET /profile?q=alice%40example.com HTTP/1.1"
+}
+{
+  "sink": "file_write",
+  "ts": "2025-12-12T08:34:01Z",
+  "source": "test_cases",
+  "pid": 72625,
+  "dest": "/Users/enasbatarfi/sst-detection-system/budget_tracker/shared_with_third_parties/third_party_marketing.txt",
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "[Marketing Share]\nTimestamp: 2025-12-12T13:34:01.614580Z\nUser: Alice <alice@example.com>\nSegments: Food, Transport, Entertainment\nTotal spend: 245.5\nBudget style: Balanced\nGoals: Save for trip\nPayload: text\nVendor: marketing_platform_v1\n\n"
+}
+{
+  "sink": "file_write",
+  "ts": "2025-12-12T08:34:01Z",
+  "source": "test_cases",
+  "pid": 72625,
+  "dest": "/Users/enasbatarfi/sst-detection-system/budget_tracker/shared_with_third_parties/third_party_scoring.txt",
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "[Risk Scoring Share]\nTimestamp: 2025-12-12T13:34:01.620401Z\nAnon ID: ff8d9819fc0e12bf0d24892e45987e249a28dce836a85cad60e28eaaa8c6d976\nMonthly spend: 245.5\nRisk score: 0.2\nSegments: Food, Transport, Entertainment\nPayload: text\nVendor: risk_scoring_v1\nFull anon ID: ff8d9819fc0e12bf0d24892e45987e249a28dce836a85cad60e28eaaa8c6d976\n\n"
+}

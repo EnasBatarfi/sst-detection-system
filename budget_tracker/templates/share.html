@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Share Snapshot | SmartBudget</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/share.css') }}">
+</head>
+<body>
+<div class="dashboard-container">
+
+    <!-- Sidebar (shared style) -->
+    <div class="sidebar">
+        <div class="user-info">
+            <h3>{{ user.name }}</h3>
+        </div>
+        <a href="{{ url_for('dashboard') }}" class="btn">Dashboard</a>
+        <a href="{{ url_for('profile') }}" class="btn">Profile</a>
+        <a href="{{ url_for('all_transactions') }}" class="btn">All Transactions</a>
+        <a href="{{ url_for('ai_insights_page') }}" class="btn">AI Insights</a>
+        <a href="{{ url_for('share') }}" class="btn active">Share Data</a>
+        <a href="{{ url_for('logout') }}" class="btn logout">Logout</a>
+    </div>
+
+    <div class="main-content" style="background:#f6f8fb;">
+    <div class="share-page">
+        <header class="share-header">
+            <div>
+                <p class="eyebrow">Trusted sharing</p>
+                <h1>Preview your outgoing data</h1>
+                <p class="lede">We assemble a small snapshot that partners can use without seeing your full transaction history. Review it first, then choose to send.</p>
+            </div>
+            <div class="actions">
+                <a class="btn ghost" href="{{ url_for('dashboard') }}">← Back to dashboard</a>
+                <form method="POST" style="margin:0;">
+                    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+                    <button class="btn primary" type="submit">Send snapshot</button>
+                </form>
+            </div>
+        </header>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-container">
+          {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <section class="summary-grid">
+        <div class="card">
+            <h3>Identity</h3>
+            <ul>
+                <li><strong>Name:</strong> {{ summary.name }}</li>
+                <li><strong>Email:</strong> {{ summary.user_email }}</li>
+                <li><strong>Budget style:</strong> {{ summary.budget_style or '—' }}</li>
+                <li><strong>Goals:</strong> {{ summary.goals or '—' }}</li>
+            </ul>
+        </div>
+        <div class="card">
+            <h3>Spending</h3>
+            <ul>
+                <li><strong>Income:</strong> {{ "%.2f"|format(summary.income) }}</li>
+                <li><strong>Total spend (last 50):</strong> {{ "%.2f"|format(summary.total_spend) }}</li>
+                <li><strong>Segments:</strong>
+                    {% if summary.categories %}
+                        {{ summary.categories.keys()|list|join(', ') }}
+                    {% else %}
+                        None
+                    {% endif %}
+                </li>
+            </ul>
+        </div>
+        <div class="card">
+            <h3>Recent activity sample</h3>
+            <div class="table-scroll">
+                <table class="mini-table">
+                    <thead>
+                        <tr><th>Date</th><th>Category</th><th>Amount</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for expense in expenses[:5] %}
+                        <tr>
+                            <td>{{ expense.date.strftime('%Y-%m-%d') }}</td>
+                            <td>{{ expense.category }}</td>
+                            <td>{{ "%.2f"|format(expense.amount) }}</td>
+                        </tr>
+                        {% endfor %}
+                        {% if not expenses %}
+                        <tr><td colspan="3">No expenses yet</td></tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section class="card partners">
+        <h3>Who receives this?</h3>
+        <div class="partner-list">
+            <div>
+                <p class="label">Marketing insights</p>
+                <p>Only segment names and goals. No raw transactions, no PII beyond email.</p>
+            </div>
+            <div>
+                <p class="label">Risk scoring</p>
+                <p>Hashed identifier plus spend ratios. No plain names.</p>
+            </div>
+        </div>
+        {% if shared %}
+            <div class="share-result">
+                <h4>Snapshot delivered (simulated)</h4>
+                <p>Your summary was handed to trusted partners for marketing insights and risk scoring. No full transaction history was shared.</p>
+                <ul>
+                    <li>Marketing insights partner (segments & goals only)</li>
+                    <li>Risk scoring partner (hashed ID & ratios only)</li>
+                </ul>
+            </div>
+        {% else %}
+            <div class="share-result muted">
+                <p>No snapshot sent yet. Tap “Send snapshot” to hand off a minimal bundle to our trusted partners.</p>
+            </div>
+        {% endif %}
+    </section>
+</div>
+    </div>
+</div>
+</body>
+</html>

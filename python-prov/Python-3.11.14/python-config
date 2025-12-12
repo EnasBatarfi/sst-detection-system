@@ -1,4 +1,4 @@
-#!/Users/enasbatarfi/sst-detection-system/python-prov/py311-prov/bin/python3.11
+#!/Users/enasbatarfi/sst-detection-system/python-prov/Python-3.11.14/../py311-prov/bin/python3.11
 # -*- python -*-
 
 # Keep this script in sync with python-config.sh.in

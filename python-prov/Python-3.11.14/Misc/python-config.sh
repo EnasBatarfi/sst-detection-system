@@ -30,7 +30,7 @@ prefix_real=$(installed_prefix "$0")
 # locations. Keep prefix & exec_prefix using their original values in case
 # they are referenced in other configure variables, to prevent double
 # substitution, issue #22140.
-prefix="/Users/enasbatarfi/sst-detection-system/python-prov/py311-prov"
+prefix="/Users/enasbatarfi/sst-detection-system/python-prov/Python-3.11.14/../py311-prov"
 exec_prefix="${prefix}"
 exec_prefix_real=${prefix_real}
 includedir=$(echo "${prefix}/include" | sed "s#$prefix#$prefix_real#")

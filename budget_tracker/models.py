@@ -7,6 +7,7 @@ db = SQLAlchemy()
 
 
 class User(db.Model):
+    """Registered budget-tracking user."""
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150), nullable=False)
     email = db.Column(db.String(150), unique=True, nullable=False)
@@ -22,6 +23,7 @@ class User(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 class Expense(db.Model):
+    """Single outgoing transaction belonging to a user."""
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     amount = db.Column(db.Float, nullable=False)
@@ -30,3 +32,15 @@ class Expense(db.Model):
     date = db.Column(db.DateTime, default=datetime.utcnow)
 
     user = db.relationship('User', backref=db.backref('expenses', lazy=True))
+
+
+class Income(db.Model):
+    """Single incoming transaction belonging to a user."""
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    amount = db.Column(db.Float, nullable=False)
+    category = db.Column(db.String(50), nullable=False, default='Salary')
+    description = db.Column(db.String(200))
+    date = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship('User', backref=db.backref('incomes', lazy=True))

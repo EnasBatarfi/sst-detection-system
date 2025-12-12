@@ -1,5 +1,5 @@
 # See: man pkg-config
-prefix=/Users/enasbatarfi/sst-detection-system/python-prov/py311-prov
+prefix=/Users/enasbatarfi/sst-detection-system/python-prov/Python-3.11.14/../py311-prov
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include

@@ -4194,29 +4194,49 @@ sock_send(PySocketSockObject *s, PyObject *args)
 {
     int flags = 0;
     Py_buffer pbuf;
-    /* === Provenance logging hook === */
-    _PyProv_LogIfSensitive("socket_send", pbuf.obj);
-    /* === End provenance hook === */
     struct sock_send ctx;
 
     if (!PyArg_ParseTuple(args, "y*|i:send", &pbuf, &flags))
         return NULL;
 
+    /* === Provenance logging hook: socket send (covers HTTP too) === */
+    if (pbuf.len > 0) {
+        PyObject *prov_obj = NULL;
+        if (pbuf.obj) {
+            prov_obj = pbuf.obj;
+            Py_INCREF(prov_obj);  /* borrow the original object to preserve tags */
+        }
+        else if (pbuf.buf) {
+            prov_obj = PyBytes_FromStringAndSize((const char *)pbuf.buf,
+                                                 pbuf.len);
+        }
+        if (prov_obj != NULL) {
+            /* Stable channel dest for sockets */
+            _PyProv_LogIfSensitive("socket_send", prov_obj, "<socket>");
+            Py_DECREF(prov_obj);
+        }
+    }
+    /* === End provenance hook === */
+
     if (!IS_SELECTABLE(s)) {
         PyBuffer_Release(&pbuf);
         return select_error();
     }
+
     ctx.buf = pbuf.buf;
     ctx.len = pbuf.len;
     ctx.flags = flags;
+
     if (sock_call(s, 1, sock_send_impl, &ctx) < 0) {
         PyBuffer_Release(&pbuf);
         return NULL;
     }
+
     PyBuffer_Release(&pbuf);
 
     return PyLong_FromSsize_t(ctx.result);
 }
+
 
 PyDoc_STRVAR(send_doc,
 "send(data[, flags]) -> count\n\
@@ -4247,6 +4267,25 @@ sock_sendall(PySocketSockObject *s, PyObject *args)
     buf = pbuf.buf;
     len = pbuf.len;
 
+    /* Provenance hook: log data leaving via sendall (covers HTTP too) */
+    if (pbuf.len > 0) {
+        PyObject *prov_obj = NULL;
+        if (pbuf.obj) {
+            prov_obj = pbuf.obj;
+            Py_INCREF(prov_obj);
+        }
+        else if (pbuf.buf) {
+            prov_obj = PyBytes_FromStringAndSize((const char *)pbuf.buf,
+                                                 pbuf.len);
+        }
+        if (prov_obj != NULL) {
+            /* Stable channel dest for sockets */
+            _PyProv_LogIfSensitive("socket_send", prov_obj, "<socket>");
+            Py_DECREF(prov_obj);
+        }
+    }
+    /* End provenance hook */
+
     if (!IS_SELECTABLE(s)) {
         PyBuffer_Release(&pbuf);
         return select_error();
@@ -4255,7 +4294,6 @@ sock_sendall(PySocketSockObject *s, PyObject *args)
     do {
         if (has_timeout) {
             if (deadline_initialized) {
-                /* recompute the timeout */
                 timeout = _PyDeadline_Get(deadline);
             }
             else {
@@ -4280,16 +4318,13 @@ sock_sendall(PySocketSockObject *s, PyObject *args)
         buf += n;
         len -= n;
 
-        /* We must run our signal handlers before looping again.
-           send() can return a successful partial write when it is
-           interrupted, so we can't restrict ourselves to EINTR. */
         if (PyErr_CheckSignals())
             goto done;
     } while (len > 0);
-    PyBuffer_Release(&pbuf);
 
     Py_INCREF(Py_None);
     res = Py_None;
+    goto done;
 
 done:
     PyBuffer_Release(&pbuf);

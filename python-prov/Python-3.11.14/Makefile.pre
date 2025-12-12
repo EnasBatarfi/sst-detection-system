@@ -34,8 +34,8 @@ abs_srcdir=	/Users/enasbatarfi/sst-detection-system/python-prov/Python-3.11.14
 abs_builddir=	/Users/enasbatarfi/sst-detection-system/python-prov/Python-3.11.14
 
 
-CC=		gcc
-CXX=		g++
+CC=		ccache clang
+CXX=		ccache clang++
 MAINCC=		$(CC)
 LINKCC=		$(PURIFY) $(MAINCC)
 AR=		ar
@@ -93,8 +93,8 @@ CONFIGURE_LDFLAGS_NODIST=
 # LDFLAGS_NOLTO is an extra flag to disable lto. It is used to speed up building
 # of _bootstrap_python and _freeze_module tools, which don't need LTO.
 CONFIGURE_LDFLAGS_NOLTO=
-CONFIGURE_CPPFLAGS=	-I/opt/homebrew/opt/openssl@3/include
-CONFIGURE_LDFLAGS=	-L/opt/homebrew/opt/openssl@3/lib
+CONFIGURE_CPPFLAGS=	
+CONFIGURE_LDFLAGS=	
 # Avoid assigning CFLAGS, LDFLAGS, etc. so users can use them on the
 # command line to append to these values without stomping the pre-set
 # values.
@@ -107,7 +107,7 @@ PY_CPPFLAGS=	$(BASECPPFLAGS) -I. -I$(srcdir)/Include $(CONFIGURE_CPPFLAGS) $(CPP
 PY_LDFLAGS=	$(CONFIGURE_LDFLAGS) $(LDFLAGS)
 PY_LDFLAGS_NODIST=$(CONFIGURE_LDFLAGS_NODIST) $(LDFLAGS_NODIST)
 PY_LDFLAGS_NOLTO=$(PY_LDFLAGS) $(CONFIGURE_LDFLAGS_NOLTO) $(LDFLAGS_NODIST)
-NO_AS_NEEDED=	-Wl,--no-as-needed
+NO_AS_NEEDED=	
 CCSHARED=	
 # LINKFORSHARED are the flags passed to the $(CC) command that links
 # the python executable -- this is only needed for a few systems
@@ -133,7 +133,7 @@ MULTIARCH=	darwin
 MULTIARCH_CPPFLAGS = -DMULTIARCH=\"darwin\"
 
 # Install prefix for architecture-independent files
-prefix=		/Users/enasbatarfi/sst-detection-system/python-prov/py311-prov
+prefix=		/Users/enasbatarfi/sst-detection-system/python-prov/Python-3.11.14/../py311-prov
 
 # Install prefix for architecture-dependent files
 exec_prefix=	${prefix}
@@ -210,9 +210,9 @@ LIBMPDEC_A= Modules/_decimal/libmpdec/libmpdec.a
 LIBEXPAT_A= Modules/expat/libexpat.a
 
 # OpenSSL options for setup.py so sysconfig can pick up AC_SUBST() vars.
-OPENSSL_INCLUDES=-I/opt/homebrew/opt/openssl@3/include
+OPENSSL_INCLUDES=-I/opt/homebrew/Cellar/openssl@3/3.6.0/include
 OPENSSL_LIBS=-lssl -lcrypto
-OPENSSL_LDFLAGS=-L/opt/homebrew/opt/openssl@3/lib
+OPENSSL_LDFLAGS=-L/opt/homebrew/Cellar/openssl@3/3.6.0/lib
 OPENSSL_RPATH=
 
 # Module state, compiler flags and linker flags
@@ -328,11 +328,11 @@ MODULE__LZMA_STATE=yes
 MODULE__LZMA_CFLAGS=-I/opt/homebrew/Cellar/xz/5.8.1/include
 MODULE__LZMA_LDFLAGS=-L/opt/homebrew/Cellar/xz/5.8.1/lib -llzma
 MODULE__SSL_STATE=yes
-MODULE__SSL_CFLAGS=-I/opt/homebrew/opt/openssl@3/include
-MODULE__SSL_LDFLAGS=-L/opt/homebrew/opt/openssl@3/lib  -lssl -lcrypto
+MODULE__SSL_CFLAGS=-I/opt/homebrew/Cellar/openssl@3/3.6.0/include
+MODULE__SSL_LDFLAGS=-L/opt/homebrew/Cellar/openssl@3/3.6.0/lib  -lssl -lcrypto
 MODULE__HASHLIB_STATE=yes
-MODULE__HASHLIB_CFLAGS=-I/opt/homebrew/opt/openssl@3/include
-MODULE__HASHLIB_LDFLAGS=-L/opt/homebrew/opt/openssl@3/lib   -lcrypto
+MODULE__HASHLIB_CFLAGS=-I/opt/homebrew/Cellar/openssl@3/3.6.0/include
+MODULE__HASHLIB_LDFLAGS=-L/opt/homebrew/Cellar/openssl@3/3.6.0/lib   -lcrypto
 MODULE__TESTCAPI_STATE=yes
 MODULE__TESTCLINIC_STATE=yes
 MODULE__TESTINTERNALCAPI_STATE=yes
@@ -356,7 +356,7 @@ EXEMODE=	755
 FILEMODE=	644
 
 # configure script arguments
-CONFIG_ARGS=	 '--prefix=/Users/enasbatarfi/sst-detection-system/python-prov/py311-prov' '--with-openssl=/opt/homebrew/opt/openssl@3' 'CPPFLAGS=-I/opt/homebrew/opt/openssl@3/include' 'LDFLAGS=-L/opt/homebrew/opt/openssl@3/lib'
+CONFIG_ARGS=	 '--prefix=/Users/enasbatarfi/sst-detection-system/python-prov/Python-3.11.14/../py311-prov' 'CC=ccache clang'
 
 
 # Subdirectories with code

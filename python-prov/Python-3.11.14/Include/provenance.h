@@ -18,7 +18,7 @@ PyAPI_FUNC(const char *) _PyProv_GetCurrentOwner(void);
 PyAPI_FUNC(void) _PyProv_Propagate(PyObject *result, PyObject *a, PyObject *b);
 
 /* Sink logging */
-PyAPI_FUNC(void) _PyProv_LogIfSensitive(const char *sink, PyObject *obj);
+PyAPI_FUNC(void) _PyProv_LogIfSensitive(const char *sink, PyObject *obj, const char *dest);
 
 /* Clear the thread-local current owner */
 PyAPI_FUNC(void) _PyProv_ClearCurrentOwner(void);

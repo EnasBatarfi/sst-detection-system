@@ -1644,7 +1644,25 @@ _io_TextIOWrapper_write_impl(textio *self, PyObject *text)
     Py_INCREF(text);
     
     // Provenance hook: log sensitive data written through text I/O
-    _PyProv_LogIfSensitive("file_write", text);
+    char dest[256];
+    dest[0] = '\0';
+    PyObject *nameobj = NULL;
+    if (_PyObject_LookupAttr((PyObject *)self, &_Py_ID(name), &nameobj) >= 0 && nameobj) {
+        if (PyUnicode_Check(nameobj)) {
+            const char *n = PyUnicode_AsUTF8(nameobj);
+            if (n) {
+                strncpy(dest, n, sizeof(dest) - 1);
+                dest[sizeof(dest) - 1] = '\0';
+            }
+        }
+        Py_DECREF(nameobj);
+    }
+    const char *sink = "file_write";
+    if (dest[0]) {
+        if (strcmp(dest, "<stdout>") == 0) sink = "stdout";
+        else if (strcmp(dest, "<stderr>") == 0) sink = "stderr";
+    }
+    _PyProv_LogIfSensitive(sink, text, dest[0] ? dest : NULL);
 
 
     textlen = PyUnicode_GET_LENGTH(text);

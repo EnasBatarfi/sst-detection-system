@@ -1,0 +1,542 @@
+{
+  "sink": "socket_send",
+  "ts": "2025-12-12T08:21:41Z",
+  "source": "budget_tracker",
+  "pid": 71442,
+  "owners": [
+    "batarfi@gmail.com"
+  ],
+  "data": "POST /openai/v1/chat/completions HTTP/1.1"
+}
+{
+  "sink": "socket_send",
+  "ts": "2025-12-12T08:21:41Z",
+  "source": "budget_tracker",
+  "pid": 71442,
+  "owners": [
+    "batarfi@gmail.com"
+  ],
+  "data": "{\"model\": \"qwen/qwen3-32b\", \"messages\": [{\"role\": \"system\", \"content\": \"You are a concise financial assistant.\"}, {\"role\": \"user\", \"content\": \"\\nYou are a helpful financial assistant.\\n\\nUser data:\\n- Income: $120000.00\\n- Total Spent: $1210.00 (1.0% of income)\\n- Spending Breakdown: {'Food': 1210.0}\\n- Budget Style: Balanced\\n- Goal: \\n\\nReturn 3\\u20135 actionable insights in JSON array format. Each insight must contain:\\n- title\\n- problem\\n- action_steps (list of 2\\u20134 steps)\\nDo not include any extra text outside the JSON array.\\n\"}], \"temperature\": 0.4}"
+}
+{
+  "sink": "file_write",
+  "ts": "2025-12-12T08:21:56Z",
+  "source": "budget_tracker",
+  "pid": 71442,
+  "dest": "/Users/enasbatarfi/sst-detection-system/budget_tracker/shared_with_third_parties/third_party_marketing.txt",
+  "owners": [
+    "batarfi@gmail.com"
+  ],
+  "data": "[Marketing Share]\nTimestamp: 2025-12-12T13:21:56.072295Z\nUser: Enas <batarfi@gmail.com>\nSegments: Food\nTotal spend: 1210.0\nBudget style: Balanced\nGoals: —\nPayload: text\nVendor: marketing_platform_v1\n\n"
+}
+{
+  "sink": "file_write",
+  "ts": "2025-12-12T08:21:56Z",
+  "source": "budget_tracker",
+  "pid": 71442,
+  "dest": "/Users/enasbatarfi/sst-detection-system/budget_tracker/shared_with_third_parties/third_party_scoring.txt",
+  "owners": [
+    "batarfi@gmail.com"
+  ],
+  "data": "[Risk Scoring Share]\nTimestamp: 2025-12-12T13:21:56.077336Z\nAnon ID: a029726bea506032c3f919fded0a3cb316916233e880e1af5f77d04fbf164dfb\nMonthly spend: 1210.0\nRisk score: 0.2\nSegments: Food\nPayload: text\nVendor: risk_scoring_v1\nFull anon ID: a029726bea506032c3f919fded0a3cb316916233e880e1af5f77d04fbf164dfb\n\n"
+}
+{
+  "sink": "socket_send",
+  "ts": "2025-12-12T08:22:10Z",
+  "source": "budget_tracker",
+  "pid": 71442,
+  "owners": [
+    "batarfi@gmail.com"
+  ],
+  "data": "POST /openai/v1/chat/completions HTTP/1.1"
+}
+{
+  "sink": "socket_send",
+  "ts": "2025-12-12T08:22:10Z",
+  "source": "budget_tracker",
+  "pid": 71442,
+  "owners": [
+    "batarfi@gmail.com"
+  ],
+  "data": "{\"model\": \"qwen/qwen3-32b\", \"messages\": [{\"role\": \"system\", \"content\": \"You are a concise financial assistant.\"}, {\"role\": \"user\", \"content\": \"\\nYou are a helpful financial assistant.\\n\\nUser data:\\n- Income: $120000.00\\n- Total Spent: $1210.00 (1.0% of income)\\n- Spending Breakdown: {'Food': 1210.0}\\n- Budget Style: Balanced\\n- Goal: \\n\\nReturn 3\\u20135 actionable insights in JSON array format. Each insight must contain:\\n- title\\n- problem\\n- action_steps (list of 2\\u20134 steps)\\nDo not include any extra text outside the JSON array.\\n\"}], \"temperature\": 0.4}"
+}
+{
+  "sink": "file_write",
+  "ts": "2025-12-12T08:22:16Z",
+  "source": "budget_tracker",
+  "pid": 71442,
+  "dest": "/Users/enasbatarfi/sst-detection-system/budget_tracker/shared_with_third_parties/third_party_marketing.txt",
+  "owners": [
+    "batarfi@gmail.com"
+  ],
+  "data": "[Marketing Share]\nTimestamp: 2025-12-12T13:22:16.164733Z\nUser: Enas <batarfi@gmail.com>\nSegments: Food\nTotal spend: 1210.0\nBudget style: Balanced\nGoals: —\nPayload: text\nVendor: marketing_platform_v1\n\n"
+}
+{
+  "sink": "file_write",
+  "ts": "2025-12-12T08:22:16Z",
+  "source": "budget_tracker",
+  "pid": 71442,
+  "dest": "/Users/enasbatarfi/sst-detection-system/budget_tracker/shared_with_third_parties/third_party_scoring.txt",
+  "owners": [
+    "batarfi@gmail.com"
+  ],
+  "data": "[Risk Scoring Share]\nTimestamp: 2025-12-12T13:22:16.168182Z\nAnon ID: a029726bea506032c3f919fded0a3cb316916233e880e1af5f77d04fbf164dfb\nMonthly spend: 1210.0\nRisk score: 0.2\nSegments: Food\nPayload: text\nVendor: risk_scoring_v1\nFull anon ID: a029726bea506032c3f919fded0a3cb316916233e880e1af5f77d04fbf164dfb\n\n"
+}
+{
+  "sink": "socket_send",
+  "ts": "2025-12-12T08:22:19Z",
+  "source": "budget_tracker",
+  "pid": 71442,
+  "dest": "<socket>",
+  "owners": [
+    "batarfi@gmail.com"
+  ],
+  "data": "<!doctype html>"
+}
+{
+  "sink": "socket_send",
+  "ts": "2025-12-12T08:22:35Z",
+  "source": "budget_tracker",
+  "pid": 71442,
+  "owners": [
+    "batarfi@gmail.com"
+  ],
+  "data": "POST /openai/v1/chat/completions HTTP/1.1"
+}
+{
+  "sink": "socket_send",
+  "ts": "2025-12-12T08:22:35Z",
+  "source": "budget_tracker",
+  "pid": 71442,
+  "owners": [
+    "batarfi@gmail.com"
+  ],
+  "data": "{\"model\": \"qwen/qwen3-32b\", \"messages\": [{\"role\": \"system\", \"content\": \"You are a concise financial assistant.\"}, {\"role\": \"user\", \"content\": \"\\nYou are a helpful financial assistant.\\n\\nUser data:\\n- Income: $10000.00\\n- Total Spent: $126967.00 (1269.7% of income)\\n- Spending Breakdown: {'Food': 517.0, 'Entertainment': 20000.0, 'Salary': 101000.0, 'Transport': 50.0, 'Shopping': 400.0, 'Bills': 5000.0}\\n- Budget Style: Balanced\\n- Goal: Vacation\\n\\nReturn 3\\u20135 actionable insights in JSON array format. Each insight must contain:\\n- title\\n- problem\\n- action_steps (list of 2\\u20134 steps)\\nDo not include any extra text outside the JSON array.\\n\"}], \"temperature\": 0.4}"
+}
+{
+  "sink": "file_write",
+  "ts": "2025-12-12T08:22:41Z",
+  "source": "budget_tracker",
+  "pid": 71442,
+  "dest": "/Users/enasbatarfi/sst-detection-system/budget_tracker/shared_with_third_parties/third_party_marketing.txt",
+  "owners": [
+    "enasmbatarfi@gmail.com"
+  ],
+  "data": "[Marketing Share]\nTimestamp: 2025-12-12T13:22:41.990870Z\nUser: Enas Mohammed Batarfi <enasmbatarfi@gmail.com>\nSegments: Food, Entertainment, Salary, Transport, Shopping, Bills\nTotal spend: 126967.0\nBudget style: Balanced\nGoals: Vacation\nPayload: text\nVendor: marketing_platform_v1\n\n"
+}
+{
+  "sink": "file_write",
+  "ts": "2025-12-12T08:22:41Z",
+  "source": "budget_tracker",
+  "pid": 71442,
+  "dest": "/Users/enasbatarfi/sst-detection-system/budget_tracker/shared_with_third_parties/third_party_scoring.txt",
+  "owners": [
+    "batarfi@gmail.com"
+  ],
+  "data": "[Risk Scoring Share]\nTimestamp: 2025-12-12T13:22:41.993624Z\nAnon ID: 3c08c701d5386831db781ab9361ae26973e93a45158bcf93e54b5a6df46a6330\nMonthly spend: 126967.0\nRisk score: 0.9\nSegments: Food, Entertainment, Salary, Transport, Shopping, Bills\nPayload: text\nVendor: risk_scoring_v1\nFull anon ID: 3c08c701d5386831db781ab9361ae26973e93a45158bcf93e54b5a6df46a6330\n\n"
+}
+{
+  "sink": "socket_send",
+  "ts": "2025-12-12T08:22:55Z",
+  "source": "budget_tracker",
+  "pid": 71442,
+  "dest": "<socket>",
+  "owners": [
+    "batarfi@gmail.com"
+  ],
+  "data": "<!doctype html>"
+}
+{
+  "sink": "stdout",
+  "ts": "2025-12-12T08:31:30Z",
+  "source": "budget_tracker",
+  "pid": 72147,
+  "dest": "<stdout>",
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "alice@example.com"
+}
+{
+  "sink": "stdout",
+  "ts": "2025-12-12T08:31:30Z",
+  "source": "budget_tracker",
+  "pid": 72147,
+  "dest": "<stdout>",
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "30"
+}
+{
+  "sink": "stdout",
+  "ts": "2025-12-12T08:31:30Z",
+  "source": "budget_tracker",
+  "pid": 72147,
+  "dest": "<stdout>",
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "USA"
+}
+{
+  "sink": "stdout",
+  "ts": "2025-12-12T08:31:30Z",
+  "source": "budget_tracker",
+  "pid": 72147,
+  "dest": "<stdout>",
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "alice@example.com  --- "
+}
+{
+  "sink": "stdout",
+  "ts": "2025-12-12T08:31:30Z",
+  "source": "budget_tracker",
+  "pid": 72147,
+  "dest": "<stdout>",
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "alice@example.com"
+}
+{
+  "sink": "stdout",
+  "ts": "2025-12-12T08:31:30Z",
+  "source": "budget_tracker",
+  "pid": 72147,
+  "dest": "<stdout>",
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "alice@example.com -- verified"
+}
+{
+  "sink": "stdout",
+  "ts": "2025-12-12T08:31:30Z",
+  "source": "budget_tracker",
+  "pid": 72147,
+  "dest": "<stdout>",
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "alice@example.com"
+}
+{
+  "sink": "stdout",
+  "ts": "2025-12-12T08:31:30Z",
+  "source": "budget_tracker",
+  "pid": 72147,
+  "dest": "<stdout>",
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "999"
+}
+{
+  "sink": "stdout",
+  "ts": "2025-12-12T08:31:30Z",
+  "source": "budget_tracker",
+  "pid": 72147,
+  "dest": "<stdout>",
+  "owners": [
+    "alice@example.com"
+    ,"bob@example.com"
+  ],
+  "data": "1024"
+}
+{
+  "sink": "stdout",
+  "ts": "2025-12-12T08:31:30Z",
+  "source": "budget_tracker",
+  "pid": 72147,
+  "dest": "<stdout>",
+  "owners": [
+    "bob@example.com"
+  ],
+  "data": "25"
+}
+{
+  "sink": "stdout",
+  "ts": "2025-12-12T08:31:30Z",
+  "source": "budget_tracker",
+  "pid": 72147,
+  "dest": "<stdout>",
+  "owners": [
+    "bob@example.com"
+  ],
+  "data": "Canada - North America"
+}
+{
+  "sink": "stdout",
+  "ts": "2025-12-12T08:31:30Z",
+  "source": "budget_tracker",
+  "pid": 72147,
+  "dest": "<stdout>",
+  "owners": [
+    "bob@example.com"
+    ,"alice@example.com"
+  ],
+  "data": "-0.5"
+}
+{
+  "sink": "stdout",
+  "ts": "2025-12-12T08:31:30Z",
+  "source": "budget_tracker",
+  "pid": 72147,
+  "dest": "<stdout>",
+  "owners": [
+    "bob@example.com"
+  ],
+  "data": "1600.0"
+}
+{
+  "sink": "stdout",
+  "ts": "2025-12-12T08:31:30Z",
+  "source": "budget_tracker",
+  "pid": 72147,
+  "dest": "<stdout>",
+  "owners": [
+    "bob@example.com"
+  ],
+  "data": "600.5"
+}
+{
+  "sink": "stdout",
+  "ts": "2025-12-12T08:31:30Z",
+  "source": "budget_tracker",
+  "pid": 72147,
+  "dest": "<stdout>",
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "30"
+}
+{
+  "sink": "stdout",
+  "ts": "2025-12-12T08:31:30Z",
+  "source": "budget_tracker",
+  "pid": 72147,
+  "dest": "<stdout>",
+  "owners": [
+    "alice@example.com"
+    ,"bob@example.com"
+  ],
+  "data": "1029"
+}
+{
+  "sink": "file_write",
+  "ts": "2025-12-12T08:31:30Z",
+  "source": "budget_tracker",
+  "pid": 72147,
+  "dest": "/Users/enasbatarfi/sst-detection-system/test_cases/output_files/test_text.txt",
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "999"
+}
+{
+  "sink": "file_write",
+  "ts": "2025-12-12T08:31:30Z",
+  "source": "budget_tracker",
+  "pid": 72147,
+  "dest": "/Users/enasbatarfi/sst-detection-system/test_cases/output_files/test_json.json",
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "999"
+}
+{
+  "sink": "file_write",
+  "ts": "2025-12-12T08:31:30Z",
+  "source": "budget_tracker",
+  "pid": 72147,
+  "dest": "/Users/enasbatarfi/sst-detection-system/test_cases/output_files/test_json3.json",
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "\"999\""
+}
+{
+  "sink": "file_write",
+  "ts": "2025-12-12T08:31:30Z",
+  "source": "budget_tracker",
+  "pid": 72147,
+  "dest": "/Users/enasbatarfi/sst-detection-system/test_cases/output_files/test_json2.json",
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "999"
+}
+{
+  "sink": "file_write",
+  "ts": "2025-12-12T08:31:30Z",
+  "source": "budget_tracker",
+  "pid": 72147,
+  "dest": "/Users/enasbatarfi/sst-detection-system/test_cases/output_files/test_path.txt",
+  "owners": [
+    "bob@example.com"
+  ],
+  "data": "from_path: 25"
+}
+{
+  "sink": "file_write",
+  "ts": "2025-12-12T08:31:30Z",
+  "source": "budget_tracker",
+  "pid": 72147,
+  "dest": "/Users/enasbatarfi/sst-detection-system/test_cases/output_files/test_append.log",
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "append age 999\n"
+}
+{
+  "sink": "stdout",
+  "ts": "2025-12-12T08:31:30Z",
+  "source": "budget_tracker",
+  "pid": 72147,
+  "dest": "<stdout>",
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "stdout test: 999\n"
+}
+{
+  "sink": "stderr",
+  "ts": "2025-12-12T08:31:30Z",
+  "source": "budget_tracker",
+  "pid": 72147,
+  "dest": "<stderr>",
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "stderr test: 999\n"
+}
+{
+  "sink": "stderr",
+  "ts": "2025-12-12T08:31:30Z",
+  "source": "budget_tracker",
+  "pid": 72147,
+  "dest": "<stderr>",
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "WARNING:root:log test: 999\n"
+}
+{
+  "sink": "socket_send",
+  "ts": "2025-12-12T08:31:30Z",
+  "source": "budget_tracker",
+  "pid": 72147,
+  "dest": "<socket>",
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "email: 999"
+}
+{
+  "sink": "socket_send",
+  "ts": "2025-12-12T08:31:31Z",
+  "source": "budget_tracker",
+  "pid": 72147,
+  "dest": "<socket>",
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "GET /?q=999 HTTP/1.1"
+}
+{
+  "sink": "socket_send",
+  "ts": "2025-12-12T08:31:31Z",
+  "source": "budget_tracker",
+  "pid": 72147,
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "POST /insights HTTP/1.1"
+}
+{
+  "sink": "socket_send",
+  "ts": "2025-12-12T08:31:31Z",
+  "source": "budget_tracker",
+  "pid": 72147,
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "{\"user\": \"alice@example.com\", \"goal\": \"Save for trip\"}"
+}
+{
+  "sink": "socket_send",
+  "ts": "2025-12-12T08:31:31Z",
+  "source": "budget_tracker",
+  "pid": 72147,
+  "dest": "<socket>",
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "POST /collect HTTP/1.1"
+}
+{
+  "sink": "socket_send",
+  "ts": "2025-12-12T08:31:31Z",
+  "source": "budget_tracker",
+  "pid": 72147,
+  "dest": "<socket>",
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "email=alice%40example.com"
+}
+{
+  "sink": "socket_send",
+  "ts": "2025-12-12T08:31:31Z",
+  "source": "budget_tracker",
+  "pid": 72147,
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "POST /metrics HTTP/1.1"
+}
+{
+  "sink": "socket_send",
+  "ts": "2025-12-12T08:31:31Z",
+  "source": "budget_tracker",
+  "pid": 72147,
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "{\"user\": \"alice@example.com\", \"goal\": \"Save for trip\"}"
+}
+{
+  "sink": "socket_send",
+  "ts": "2025-12-12T08:31:32Z",
+  "source": "budget_tracker",
+  "pid": 72147,
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "GET /profile?q=alice%40example.com HTTP/1.1"
+}
+{
+  "sink": "file_write",
+  "ts": "2025-12-12T08:31:32Z",
+  "source": "budget_tracker",
+  "pid": 72147,
+  "dest": "/Users/enasbatarfi/sst-detection-system/budget_tracker/shared_with_third_parties/third_party_marketing.txt",
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "[Marketing Share]\nTimestamp: 2025-12-12T13:31:32.645502Z\nUser: Alice <alice@example.com>\nSegments: Food, Transport, Entertainment\nTotal spend: 245.5\nBudget style: Balanced\nGoals: Save for trip\nPayload: text\nVendor: marketing_platform_v1\n\n"
+}
+{
+  "sink": "file_write",
+  "ts": "2025-12-12T08:31:32Z",
+  "source": "budget_tracker",
+  "pid": 72147,
+  "dest": "/Users/enasbatarfi/sst-detection-system/budget_tracker/shared_with_third_parties/third_party_scoring.txt",
+  "owners": [
+    "alice@example.com"
+  ],
+  "data": "[Risk Scoring Share]\nTimestamp: 2025-12-12T13:31:32.651793Z\nAnon ID: ff8d9819fc0e12bf0d24892e45987e249a28dce836a85cad60e28eaaa8c6d976\nMonthly spend: 245.5\nRisk score: 0.2\nSegments: Food, Transport, Entertainment\nPayload: text\nVendor: risk_scoring_v1\nFull anon ID: ff8d9819fc0e12bf0d24892e45987e249a28dce836a85cad60e28eaaa8c6d976\n\n"
+}

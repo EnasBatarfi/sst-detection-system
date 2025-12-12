@@ -102,6 +102,34 @@ body {
     align-items: center;
     margin-bottom: 30px;
 }
+.top-bar .actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+.btn {
+    border: none;
+    padding: 10px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    background: #2563eb;
+    color: #fff;
+    box-shadow: 0 8px 20px rgba(37,99,235,0.25);
+    transition: all 0.2s ease;
+}
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 22px rgba(37,99,235,0.3);
+}
+.btn.ghost {
+    background: transparent;
+    color: #2563eb;
+    border: 1px solid #cbd5e1;
+    box-shadow: none;
+}
 
 .top-bar h2 {
     margin: 0;
@@ -128,6 +156,16 @@ body {
 
 .top-bar .add-expense:hover {
     background-color: #1e40af;
+}
+.top-bar .share-btn {
+    background-color: #2563eb;
+    color: #fff;
+    border: none;
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25);
+}
+.top-bar .share-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 22px rgba(37, 99, 235, 0.3);
 }
 
 /* --- Cards --- */

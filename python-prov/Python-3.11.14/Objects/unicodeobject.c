@@ -57,6 +57,16 @@ OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "stringlib/eq.h"         // unicode_eq()
 #include "provenance.h"
 
+/* Helper: carry provenance from the source Unicode object to encoded bytes. */
+static inline PyObject *
+_PyProv_TagEncoded(PyObject *unicode, PyObject *encoded)
+{
+    if (encoded != NULL) {
+        _PyProv_Propagate(encoded, unicode, NULL);
+    }
+    return encoded;
+}
+
 #ifdef MS_WINDOWS
 #include <windows.h>
 #endif
@@ -3877,30 +3887,42 @@ PyUnicode_AsEncodedString(PyObject *unicode,
             }
 
             if (lower[0] == '8' && lower[1] == 0) {
-                return _PyUnicode_AsUTF8String(unicode, errors);
+                return _PyProv_TagEncoded(
+                    unicode,
+                    _PyUnicode_AsUTF8String(unicode, errors));
             }
             else if (lower[0] == '1' && lower[1] == '6' && lower[2] == 0) {
-                return _PyUnicode_EncodeUTF16(unicode, errors, 0);
+                return _PyProv_TagEncoded(
+                    unicode,
+                    _PyUnicode_EncodeUTF16(unicode, errors, 0));
             }
             else if (lower[0] == '3' && lower[1] == '2' && lower[2] == 0) {
-                return _PyUnicode_EncodeUTF32(unicode, errors, 0);
+                return _PyProv_TagEncoded(
+                    unicode,
+                    _PyUnicode_EncodeUTF32(unicode, errors, 0));
             }
         }
         else {
             if (strcmp(lower, "ascii") == 0
                 || strcmp(lower, "us_ascii") == 0) {
-                return _PyUnicode_AsASCIIString(unicode, errors);
+                return _PyProv_TagEncoded(
+                    unicode,
+                    _PyUnicode_AsASCIIString(unicode, errors));
             }
 #ifdef MS_WINDOWS
             else if (strcmp(lower, "mbcs") == 0) {
-                return PyUnicode_EncodeCodePage(CP_ACP, unicode, errors);
+                return _PyProv_TagEncoded(
+                    unicode,
+                    PyUnicode_EncodeCodePage(CP_ACP, unicode, errors));
             }
 #endif
             else if (strcmp(lower, "latin1") == 0 ||
                      strcmp(lower, "latin_1") == 0 ||
                      strcmp(lower, "iso_8859_1") == 0 ||
                      strcmp(lower, "iso8859_1") == 0) {
-                return _PyUnicode_AsLatin1String(unicode, errors);
+                return _PyProv_TagEncoded(
+                    unicode,
+                    _PyUnicode_AsLatin1String(unicode, errors));
             }
         }
     }
@@ -3912,7 +3934,7 @@ PyUnicode_AsEncodedString(PyObject *unicode,
 
     /* The normal path */
     if (PyBytes_Check(v))
-        return v;
+        return _PyProv_TagEncoded(unicode, v);
 
     /* If the codec returns a buffer, raise a warning and convert to bytes */
     if (PyByteArray_Check(v)) {
@@ -3931,7 +3953,7 @@ PyUnicode_AsEncodedString(PyObject *unicode,
         b = PyBytes_FromStringAndSize(PyByteArray_AS_STRING(v),
                                       PyByteArray_GET_SIZE(v));
         Py_DECREF(v);
-        return b;
+        return _PyProv_TagEncoded(unicode, b);
     }
 
     PyErr_Format(PyExc_TypeError,

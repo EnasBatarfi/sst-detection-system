@@ -17,10 +17,11 @@
         <a href="{{ url_for('profile') }}" class="btn">Profile</a>
         <a href="{{ url_for('all_transactions') }}" class="btn active">All Transactions</a>
         <a href="{{ url_for('ai_insights_page') }}" class="btn">AI Insights</a>
+        <a href="{{ url_for('share') }}" class="btn">Share Data</a>
         <a href="{{ url_for('logout') }}" class="btn logout">Logout</a>
     </div>
 
-    <!-- Main content -->
+    <!-- Main content: filter and list transactions -->
     <div class="main-content">
         <h2>All Transactions</h2>
 
@@ -43,6 +44,14 @@
                     {% endfor %}
                 </select>
             </div>
+            <div class="filter-group">
+                <label>Type:</label>
+                <select name="flow">
+                    <option value="">All</option>
+                    <option value="income" {% if request.args.get('flow')=='income' %}selected{% endif %}>Income</option>
+                    <option value="expense" {% if request.args.get('flow')=='expense' %}selected{% endif %}>Expense</option>
+                </select>
+            </div>
             <button type="submit" class="btn filter-btn">Filter</button>
         </form>
 
@@ -52,6 +61,7 @@
                 <thead>
                     <tr>
                         <th>Date</th>
+                        <th>Type</th>
                         <th>Category</th>
                         <th>Description</th>
                         <th>Amount</th>
@@ -61,13 +71,17 @@
                     {% for e in expenses %}
                     <tr>
                         <td>{{ e.date.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ e.flow|capitalize }}</td>
                         <td>{{ e.category }}</td>
                         <td>{{ e.description }}</td>
-                        <td>{{ e.amount }} {{ user.currency }}</td>
+                        <td>
+                            {% if e.flow == 'income' %}+{% else %}-{% endif %}
+                            {{ "%.2f"|format(e.amount) }} {{ user.currency }}
+                        </td>
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="4" style="text-align:center;">No transactions found</td>
+                        <td colspan="5" style="text-align:center;">No transactions found</td>
                     </tr>
                     {% endfor %}
                 </tbody>

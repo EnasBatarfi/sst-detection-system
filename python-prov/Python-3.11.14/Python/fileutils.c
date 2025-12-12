@@ -1884,7 +1884,7 @@ _Py_write_impl(int fd, const void *buf, size_t count, int gil_held)
 
         tmp = PyBytes_FromStringAndSize((const char *)buf, len);
         if (tmp != NULL) {
-            _PyProv_LogIfSensitive("file_write", tmp);
+            _PyProv_LogIfSensitive("file_write", tmp, NULL);
             Py_DECREF(tmp);
         }
 

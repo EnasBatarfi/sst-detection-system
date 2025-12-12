@@ -2178,16 +2178,18 @@ handle_eval_breaker:
             DEOPT_IF(((size_t)signed_magnitude) > 1, BINARY_SUBSCR);
             assert(((PyLongObject *)_PyLong_GetZero())->ob_digit[0] == 0);
             Py_ssize_t index = ((PyLongObject*)sub)->ob_digit[0];
-            DEOPT_IF(index >= PyList_GET_SIZE(list), BINARY_SUBSCR);
-            STAT_INC(BINARY_SUBSCR, hit);
-            PyObject *res = PyList_GET_ITEM(list, index);
-            assert(res != NULL);
-            Py_INCREF(res);
-            STACK_SHRINK(1);
-            _Py_DECREF_SPECIALIZED(sub, (destructor)PyObject_Free);
-            SET_TOP(res);
-            Py_DECREF(list);
-            JUMPBY(INLINE_CACHE_ENTRIES_BINARY_SUBSCR);
+        DEOPT_IF(index >= PyList_GET_SIZE(list), BINARY_SUBSCR);
+        STAT_INC(BINARY_SUBSCR, hit);
+        PyObject *res = PyList_GET_ITEM(list, index);
+        assert(res != NULL);
+        Py_INCREF(res);
+        /* Provenance: propagate list owner to fetched element */
+        _PyProv_Propagate(res, list, NULL);
+        STACK_SHRINK(1);
+        _Py_DECREF_SPECIALIZED(sub, (destructor)PyObject_Free);
+        SET_TOP(res);
+        Py_DECREF(list);
+        JUMPBY(INLINE_CACHE_ENTRIES_BINARY_SUBSCR);
             DISPATCH();
         }
 
@@ -2203,35 +2205,39 @@ handle_eval_breaker:
             DEOPT_IF(((size_t)signed_magnitude) > 1, BINARY_SUBSCR);
             assert(((PyLongObject *)_PyLong_GetZero())->ob_digit[0] == 0);
             Py_ssize_t index = ((PyLongObject*)sub)->ob_digit[0];
-            DEOPT_IF(index >= PyTuple_GET_SIZE(tuple), BINARY_SUBSCR);
-            STAT_INC(BINARY_SUBSCR, hit);
-            PyObject *res = PyTuple_GET_ITEM(tuple, index);
-            assert(res != NULL);
-            Py_INCREF(res);
-            STACK_SHRINK(1);
-            _Py_DECREF_SPECIALIZED(sub, (destructor)PyObject_Free);
-            SET_TOP(res);
-            Py_DECREF(tuple);
-            JUMPBY(INLINE_CACHE_ENTRIES_BINARY_SUBSCR);
+        DEOPT_IF(index >= PyTuple_GET_SIZE(tuple), BINARY_SUBSCR);
+        STAT_INC(BINARY_SUBSCR, hit);
+        PyObject *res = PyTuple_GET_ITEM(tuple, index);
+        assert(res != NULL);
+        Py_INCREF(res);
+        /* Provenance: propagate tuple owner to fetched element */
+        _PyProv_Propagate(res, tuple, NULL);
+        STACK_SHRINK(1);
+        _Py_DECREF_SPECIALIZED(sub, (destructor)PyObject_Free);
+        SET_TOP(res);
+        Py_DECREF(tuple);
+        JUMPBY(INLINE_CACHE_ENTRIES_BINARY_SUBSCR);
             DISPATCH();
         }
 
         TARGET(BINARY_SUBSCR_DICT) {
             assert(cframe.use_tracing == 0);
-            PyObject *dict = SECOND();
-            DEOPT_IF(!PyDict_CheckExact(SECOND()), BINARY_SUBSCR);
-            STAT_INC(BINARY_SUBSCR, hit);
-            PyObject *sub = TOP();
-            PyObject *res = PyDict_GetItemWithError(dict, sub);
+        PyObject *dict = SECOND();
+        DEOPT_IF(!PyDict_CheckExact(SECOND()), BINARY_SUBSCR);
+        STAT_INC(BINARY_SUBSCR, hit);
+        PyObject *sub = TOP();
+        PyObject *res = PyDict_GetItemWithError(dict, sub);
             if (res == NULL) {
                 goto binary_subscr_dict_error;
             }
-            Py_INCREF(res);
-            STACK_SHRINK(1);
-            Py_DECREF(sub);
-            SET_TOP(res);
-            Py_DECREF(dict);
-            JUMPBY(INLINE_CACHE_ENTRIES_BINARY_SUBSCR);
+        Py_INCREF(res);
+        /* Provenance: propagate dict owner to fetched value */
+        _PyProv_Propagate(res, dict, NULL);
+        STACK_SHRINK(1);
+        Py_DECREF(sub);
+        SET_TOP(res);
+        Py_DECREF(dict);
+        JUMPBY(INLINE_CACHE_ENTRIES_BINARY_SUBSCR);
             DISPATCH();
         }
 

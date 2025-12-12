@@ -19,6 +19,7 @@
         <a href="{{ url_for('profile') }}" class="btn">Profile</a>
         <a href="{{ url_for('all_transactions') }}" class="btn">All Transactions</a>
         <a href="{{ url_for('ai_insights_page') }}" class="btn">AI Insights</a>
+        <a href="{{ url_for('share') }}" class="btn">Share Data</a>
         <a href="{{ url_for('logout') }}" class="btn logout">Logout</a>
     </div>
 
@@ -28,21 +29,35 @@
         <!-- Top Bar -->
         <div class="top-bar">
             <h2>Dashboard</h2>
-            <button class="btn add-expense" onclick="openPopup()">+</button>
+            <div style="display:flex; gap:10px;">
+                <button class="btn add-expense" onclick="openPopup()">+</button>
+            </div>
         </div>
 
         <!-- Totals Cards -->
         <div class="cards">
             <div class="card">
-                <h3>Today</h3>
+                <h3>Wallet Balance</h3>
+                <p>{{ "%.2f"|format(wallet_balance) }} {{ user.currency }}</p>
+            </div>
+            <div class="card">
+                <h3>Income Added</h3>
+                <p>+{{ "%.2f"|format(income_added) }} {{ user.currency }}</p>
+            </div>
+            <div class="card">
+                <h3>Expenses Added</h3>
+                <p>-{{ "%.2f"|format(expense_added) }} {{ user.currency }}</p>
+            </div>
+            <div class="card">
+                <h3>Today (expenses)</h3>
                 <p>{{ daily_total }} {{ user.currency }}</p>
             </div>
             <div class="card">
-                <h3>This Week</h3>
+                <h3>This Week (expenses)</h3>
                 <p>{{ weekly_total }} {{ user.currency }}</p>
             </div>
             <div class="card">
-                <h3>This Month</h3>
+                <h3>This Month (expenses)</h3>
                 <p>{{ monthly_total }} {{ user.currency }}</p>
             </div>
         </div>
@@ -66,18 +81,23 @@
                 <thead>
                     <tr>
                         <th>Date</th>
+                        <th>Type</th>
                         <th>Category</th>
                         <th>Description</th>
                         <th>Amount</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for expense in expenses[:5] %}
+                    {% for expense in transactions[:5] %}
                     <tr>
                         <td>{{ expense.date.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ expense.flow|capitalize }}</td>
                         <td>{{ expense.category }}</td>
                         <td>{{ expense.description }}</td>
-                        <td>{{ expense.amount }} {{ user.currency }}</td>
+                        <td>
+                            {% if expense.flow == 'income' %}+{% else %}-{% endif %}
+                            {{ "%.2f"|format(expense.amount) }} {{ user.currency }}
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -89,12 +109,15 @@
         <div class="charts">
         <div class="chart-container">
             <canvas id="dailyChart"></canvas>
+            <div id="dailyFallback" class="chart-fallback" style="display:none;">No daily expense data yet.</div>
         </div>
         <div class="chart-container">
             <canvas id="weeklyChart"></canvas>
+            <div id="weeklyFallback" class="chart-fallback" style="display:none;">No weekly expense data yet.</div>
         </div>
         <div class="chart-container">
             <canvas id="monthlyChart"></canvas>
+            <div id="monthlyFallback" class="chart-fallback" style="display:none;">No monthly expense data yet.</div>
         </div>
         </div>
 
@@ -106,19 +129,23 @@
 <div class="popup" id="expensePopup">
     <div class="popup-content">
         <span class="close" onclick="closePopup()">&times;</span>
-        <h3>Add New Expense</h3>
+        <h3>Add New Transaction</h3>
         <form method="POST" id="popupForm">
+            <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
             <div class="input-group">
                 <label>Amount</label>
                 <input type="number" name="amount" step="0.01" required>
             </div>
             <div class="input-group">
-                <label>Category</label>
-                <select name="category">
-                    {% for cat in categories %}
-                    <option value="{{ cat }}">{{ cat }}</option>
-                    {% endfor %}
+                <label>Type</label>
+                <select name="flow" id="flowSelect" onchange="toggleCategory()">
+                    <option value="income">Income</option>
+                    <option value="expense" selected>Expense</option>
                 </select>
+            </div>
+            <div class="input-group">
+                <label>Category</label>
+                <select name="category" id="categorySelect"></select>
             </div>
             <div class="input-group">
                 <label>Description</label>
@@ -141,9 +168,35 @@ function openPopup() {
 function closePopup() {
     document.getElementById("expensePopup").classList.remove("active");
 }
+const incomeCategories = ["Salary","Bonus","Freelance","Investment","Gift","Other income"];
+const expenseCategories = {{ categories|tojson }};
+
+function populateCategories(flow) {
+    const select = document.getElementById("categorySelect");
+    select.innerHTML = "";
+    const list = flow === "income" ? incomeCategories : expenseCategories;
+    list.forEach((c, idx) => {
+        const opt = document.createElement("option");
+        opt.value = c;
+        opt.textContent = c;
+        if (idx === 0) opt.selected = true;
+        select.appendChild(opt);
+    });
+}
+function toggleCategory() {
+    const flow = document.getElementById("flowSelect").value;
+    populateCategories(flow);
+}
+toggleCategory();
 
 // Charts
 function createPieChart(canvasId, labels, data) {
+    if (!data || data.length === 0 || data.every(x => x === 0)) {
+        document.getElementById(canvasId).style.display = "none";
+        const fb = document.getElementById(canvasId.replace("Chart","Fallback"));
+        if (fb) fb.style.display = "block";
+        return;
+    }
     return new Chart(document.getElementById(canvasId), {
         type: 'pie',
         data: {
@@ -156,6 +209,10 @@ function createPieChart(canvasId, labels, data) {
         options: {
             responsive: true,
             plugins: {
+                title: {
+                    display: true,
+                    text: canvasId.replace("Chart","") + " breakdown"
+                },
                 legend: {
                     position: 'bottom'
                 }
